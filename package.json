@@ -1,0 +1,26 @@
+{
+  "name": "aspace_backend_bike_data",
+  "version": "1.0.0",
+  "description": "aspace, Inc. - Backend",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "_moduleAliases": {
+    "@root": ".",
+    "@limebike": "misc/limebike",
+    "@config": "config",
+    "@sql": "database/sqlActions"
+  },
+  "_moduleDirectories": [
+    "node_modules"
+  ],
+  "dependencies": {
+    "module-alias": "^2.1.0",
+    "mysql": "^2.16.0",
+    "request": "^2.88.0",
+    "unique-string": "^1.0.0"
+  }
+}
