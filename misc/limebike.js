@@ -2,12 +2,12 @@ var constants = require('@config');
 var request = require('request');
 
 module.exports = {
-    getBikes: function (successCB, failCB) {
+    getBikes: function (currentRegion, successCB, failCB) {
         var options = {
             method: 'GET',
             url: constants.limebike.url,
             qs: {
-                region: constants.limebike.region
+                region: currentRegion
             },
             headers: {
                 authorization: constants.limebike.token_prefix + ' ' + constants.limebike.token

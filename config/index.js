@@ -6,7 +6,7 @@ module.exports = {
         url: 'https://lime.bike/api/partners/v1/bikes',
         token_prefix: 'Bearer',
         token: 'limebike-PMc3qGEtAAXqJa',
-        region: 'Seattle',
+        regions: ['Seattle', 'Washington DC Proper'],
     },
     twilio: {
         TWILIO_ACCOUNT_SID: 'twilio_sid',

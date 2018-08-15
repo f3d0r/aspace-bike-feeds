@@ -8,9 +8,9 @@ module.exports = {
             db.getConnection(function (err, connection) {
                 formattedObjects = [];
                 objects.forEach(function (currentRaw) {
-                    formattedObjects.push([currentRaw.company, currentRaw.id, currentRaw.num, currentRaw.type, currentRaw.lat, currentRaw.lng]);
+                    formattedObjects.push([currentRaw.company, currentRaw.region, currentRaw.id, currentRaw.num, currentRaw.type, currentRaw.lat, currentRaw.lng]);
                 });
-                var sql = 'INSERT INTO ' + connection.escapeId(database) + ' (`company`, `id`, `num`, `type`, `lat`, `lng`) VALUES ?';
+                var sql = 'INSERT INTO ' + connection.escapeId(database) + ' (`company`, `region`, `id`, `num`, `type`, `lat`, `lng`) VALUES ?';
                 connection.query(sql, [formattedObjects], function (error, results, fields) {
                     if (error) {
                         return failCB(error);
