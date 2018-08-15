@@ -1,3 +1,3 @@
-# aspace-backend
+# aspace-bike-feeds
 
-aspace, Inc. - Backend
+aspace, Inc. - Backend Bike Feeds
