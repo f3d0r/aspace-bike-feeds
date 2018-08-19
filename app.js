@@ -22,8 +22,8 @@ function updateLime() {
     
                 formattedBikes.push(newBike)
             });
-            sql.remove.regularDelete('stationless_bikes', ['company', 'region'], ['limebike', currentCity], function (rows) {
-                sql.insert.addObjects('stationless_bikes', formattedBikes, function (results) {
+            sql.remove.regularDelete('bike_locs', ['company', 'region'], ['limebike', currentCity], function (rows) {
+                sql.insert.addObjects('bike_locs', formattedBikes, function (results) {
                     console.log("Updated LimeBikes for " + currentCity + " at " + new Date());
                 }, function (error) {})
             }, function (error) {});
