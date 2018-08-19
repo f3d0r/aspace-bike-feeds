@@ -12,12 +12,18 @@
     "@root": ".",
     "@limebike": "misc/limebike",
     "@config": "config",
-    "@sql": "database/sqlActions"
+    "@sql": "database/sqlActions",
+    "@gbfs": "config/gbfs",
+    "@gbfs-analyze": "misc/gbfsAnalyze",
+    "@file-conversion": "misc/fileConversion"
   },
   "_moduleDirectories": [
     "node_modules"
   ],
   "dependencies": {
+    "csv": "^3.1.0",
+    "csvtojson": "^2.0.8",
+    "merge-json": "0.1.0-b.3",
     "module-alias": "^2.1.0",
     "mysql": "^2.16.0",
     "request": "^2.88.0",

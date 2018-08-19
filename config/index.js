@@ -8,23 +8,8 @@ module.exports = {
         token: 'limebike-PMc3qGEtAAXqJa',
         regions: ['Seattle', 'Washington DC Proper'],
     },
-    twilio: {
-        TWILIO_ACCOUNT_SID: 'twilio_sid',
-        TWILIO_AUTH_TOKEN: 'twilio_auth_token',
-        ORIGIN_PHONE: 'twilio_origin_phone_number'
-    },
     mysql_config: {
         ADMIN_TABLE: 'aspace_admins'
-    },
-    auth: {
-        PIN_EXPIRY_MINUTES: 5,
-        INTERNAL_AUTH_KEY: '***REMOVED***'
-    },
-    bcrypt: {
-        SALT_ROUNDS: 10
-    },
-    sensors: {
-        sensorDeltaFeet: 2
     },
     slack: {
         webhook: '***REMOVED***'
@@ -41,7 +26,4 @@ module.exports = {
             Point: ['lat', 'lng']
         }
     },
-    mapbox: {
-        API_KEY: '***REMOVED***'
-    }
 }
