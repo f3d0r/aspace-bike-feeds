@@ -7,7 +7,6 @@ const gbfs = require('@gbfs');
 const gbfsAnalyze = require('@gbfs-analyze');
 const fileConversion = require('@file-conversion');
 
-
 function updateLime() {
     constants.limebike.regions.forEach(function (currentCity) {
         limebike.getBikes(currentCity, function (response) {
