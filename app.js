@@ -39,11 +39,6 @@ function updateGBFS() {
     gbfs.feed.systems.forEach(function (system) {
         gbfsAnalyze.getBikes(system, function (bikes) {
             console.log("URL: " + system.company + "\t\t SUCCESS!");
-            // fs.writeFile("exports/export-" + system.company + ".json", JSON.stringify(bikes), function (err) {
-            //     if (err) {
-            //         console.log("ERROR SAVING FILE: " + err);
-            //     }
-            // });
         }, function (error) {
             console.log("URL: " + system.name + "\t\t ERROR : " + error);
         });

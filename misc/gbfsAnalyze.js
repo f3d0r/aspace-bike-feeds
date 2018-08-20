@@ -6,13 +6,16 @@ module.exports = {
     getBikes: function (system, successCB, failCB) {
         var options = {
             method: 'GET',
-            url: system.url,
+            headers: {
+                'user-agent': 'insomnia/6.0.2'
+            },
+            url: system.url
         };
         request(options, function (error, response, body) {
             if (error) {
                 failCB(error);
             } else {
-                getFeeds(body, function (feeds) {
+                getFeeds(system, body, function (feeds) {
                     getInfo(feeds[0], function (parsedStationInfo) {
                             getInfo(feeds[1], function (parsedStationStatuses) {
                                 mergeJSON(system, parsedStationInfo, parsedStationStatuses, ['company', 'region', 'type'], function (mergedBikes) {
@@ -35,7 +38,7 @@ module.exports = {
     }
 }
 
-function getFeeds(unparsedBody, successCB, failCB) {
+function getFeeds(system, unparsedBody, successCB, failCB) {
     feeds = JSON.parse(unparsedBody).data.en.feeds;
     var stationInfoFeed = "";
     var stationStatusFeed = "";
@@ -47,7 +50,6 @@ function getFeeds(unparsedBody, successCB, failCB) {
         }
     });
     if (stationInfoFeed == "" || stationStatusFeed == "") {
-        console.log(feeds);
         failCB("STATION INFO AND STATUS URLS NOT FOUND");
     } else {
         successCB([stationInfoFeed, stationStatusFeed]);
@@ -57,6 +59,9 @@ function getFeeds(unparsedBody, successCB, failCB) {
 function getInfo(feed, successCB, failCB) {
     var options = {
         method: 'GET',
+        headers: {
+            'user-agent': 'insomnia/6.0.2'
+        },
         url: feed,
     };
     request(options, function (error, response, body) {
@@ -76,13 +81,7 @@ function mergeJSON(systemInfo, stationInfo, stationStatus, extras, successCB, fa
         tempStation['lat'] = stationInfo[index].lat;
         tempStation['lng'] = stationInfo[index].lon;
         if (typeof stationStatus[index] == 'undefined') {
-            var fileName = uniqueString().substring(0, 10) + ".json";
-            // fs.writeFile("errors/" + fileName, JSON.stringify(stationInfo) + "\n\n\n\n" + JSON.stringify(stationStatus), function (err) {
-            //     if (err) {
-            //         console.log("ERROR SAVING FILE: " + err);
-            //     }
-            // });
-            return failCB("KEY UNDEFINED ERROR, KEY: " + tempStation['id'] + ", ERROR FILE: " + "errors/" + fileName);
+            return failCB("KEY UNDEFINED ERROR, KEY: " + tempStation['id'] + ", station" + systemInfo.name);
         } else {
             tempStation['bikes_available'] = stationStatus[index].num_bikes_available;
             for (extraIndex = 0; extraIndex < extras.length; extraIndex++) {
