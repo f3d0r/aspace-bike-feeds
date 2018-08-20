@@ -14,7 +14,7 @@ module.exports = {
                     resObject['url'] = currentSystem.gbfs_url;
                     resObject['company'] = currentSystem.system_id;
                     resObject['region'] = currentSystem.location;
-                    resObject['type'] = "stationed_bike";
+                    resObject['type'] = "station_bike";
                     if (currentSystem.country_code == "US") {
                         parsedSystems.push(resObject);
                     }

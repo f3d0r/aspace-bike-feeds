@@ -4,14 +4,14 @@ var uniqueString = require('unique-string');
 
 module.exports = {
     insert: {
-        addObjects: function (database, objects, successCB, failCB) {
+        addObjects: function (database, keys, objects, successCB, failCB) {
             db.getConnection(function (err, connection) {
-                formattedObjects = [];
-                objects.forEach(function (currentRaw) {
-                    formattedObjects.push([currentRaw.company, currentRaw.region, currentRaw.id, currentRaw.num, currentRaw.type, currentRaw.lat, currentRaw.lng]);
-                });
-                var sql = 'INSERT INTO ' + connection.escapeId(database) + ' (`company`, `region`, `id`, `num`, `type`, `lat`, `lng`) VALUES ?';
-                connection.query(sql, [formattedObjects], function (error, results, fields) {
+                var sql = 'INSERT INTO ' + connection.escapeId(database) + ' (`' + keys[0] + '`';
+                for (index = 1; index < keys.length; index++) {
+                    sql += ', `' + keys[index] + '` '
+                }
+                sql += ') VALUES ?';
+                connection.query(sql, [objects], function (error, results, fields) {
                     if (error) {
                         return failCB(error);
                     } else {

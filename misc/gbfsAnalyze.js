@@ -1,41 +1,56 @@
 var request = require('request');
-var fs = require('fs');
-var uniqueString = require('unique-string');
+const gbfs = require('@gbfs');
+var sql = require('@sql');
 
 module.exports = {
-    getBikes: function (system, successCB, failCB) {
-        var options = {
-            method: 'GET',
-            headers: {
-                'user-agent': 'insomnia/6.0.2'
-            },
-            url: system.url
-        };
-        request(options, function (error, response, body) {
-            if (error) {
-                failCB(error);
-            } else {
-                getFeeds(system, body, function (feeds) {
-                    getInfo(feeds[0], function (parsedStationInfo) {
-                            getInfo(feeds[1], function (parsedStationStatuses) {
-                                mergeJSON(system, parsedStationInfo, parsedStationStatuses, ['company', 'region', 'type'], function (mergedBikes) {
-                                    successCB(mergedBikes);
-                                }, function (error) {
-                                    failCB(error);
-                                });
+    updateGBFS: function () {
+        gbfs.feed.systems.forEach(function (system) {
+            getBikes(system, function (bikes) {
+                sql.remove.regularDelete('bike_locs', ['company'], [system.company], function (rows) {
+                    sqlKeys = ['company', 'region', 'id', 'num', 'type', 'lat', 'lng'];
+                    sql.insert.addObjects('bike_locs', sqlKeys, bikes, function (results) {
+                        console.log("Updated GBFS Data for " + system.company + " at " + new Date());
+                    }, function (error) {})
+                }, function (error) {});
+            }, function (error) {
+                console.log("URL: " + system.name + "\t\t ERROR : " + error);
+            });
+        });
+    }
+}
+
+function getBikes(system, successCB, failCB) {
+    var options = {
+        method: 'GET',
+        headers: {
+            'user-agent': 'insomnia/6.0.2'
+        },
+        url: system.url
+    };
+    request(options, function (error, response, body) {
+        if (error) {
+            failCB(error);
+        } else {
+            getFeeds(system, body, function (feeds) {
+                getInfo(feeds[0], function (parsedStationInfo) {
+                        getInfo(feeds[1], function (parsedStationStatuses) {
+                            mergeJSON(system, parsedStationInfo, parsedStationStatuses, ['company', 'region', 'type'], function (mergedBikes) {
+                                successCB(mergedBikes);
                             }, function (error) {
                                 failCB(error);
                             });
-                        },
-                        function (error) {
+                        }, function (error) {
                             failCB(error);
                         });
-                }, function (error) {
-                    failCB(error);
-                });
-            }
-        });
-    }
+                    },
+                    function (error) {
+                        failCB(error);
+                    });
+            }, function (error) {
+                failCB(error);
+            });
+        }
+    });
 }
 
 function getFeeds(system, unparsedBody, successCB, failCB) {
@@ -76,17 +91,17 @@ function getInfo(feed, successCB, failCB) {
 function mergeJSON(systemInfo, stationInfo, stationStatus, extras, successCB, failCB) {
     merged = [];
     for (var index = 0; index < stationInfo.length; index++) {
-        tempStation = {};
-        tempStation['id'] = stationInfo[index].station_id;
-        tempStation['lat'] = stationInfo[index].lat;
-        tempStation['lng'] = stationInfo[index].lon;
+        tempStation = [];
+        tempStation.push(systemInfo.company);
+        tempStation.push(systemInfo.region);
+        tempStation.push(stationInfo[index].station_id);
         if (typeof stationStatus[index] == 'undefined') {
             return failCB("KEY UNDEFINED ERROR, KEY: " + tempStation['id'] + ", station" + systemInfo.name);
         } else {
-            tempStation['bikes_available'] = stationStatus[index].num_bikes_available;
-            for (extraIndex = 0; extraIndex < extras.length; extraIndex++) {
-                tempStation[extras[extraIndex]] = systemInfo[extras[extraIndex]];
-            }
+            tempStation.push(stationStatus[index].num_bikes_available);
+            tempStation.push(systemInfo.type)
+            tempStation.push(stationInfo[index].lat);
+            tempStation.push(stationInfo[index].lon);
             merged.push(tempStation);
         }
     }
