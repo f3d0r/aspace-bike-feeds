@@ -24,7 +24,7 @@ module.exports = {
         DATABASE_USER: 'api',
         DATABASE_PASSWORD: 'db_password',
         DATABASE_NAME: 'aspace',
-        DATABASE_IP: '206.189.175.212',
+        DATABASE_IP: '142.93.29.51',
         DATABASE_PORT: 'db_port'
     },
     geojson: {
