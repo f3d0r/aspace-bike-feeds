@@ -26,4 +26,7 @@ module.exports = {
             Point: ['lat', 'lng']
         }
     },
+    general: {
+        update_interval: 20 * 1000
+    }
 }

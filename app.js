@@ -1,6 +1,7 @@
 require('module-alias/register');
+const constants = require('@config');
 var lime = require('@limebike');
 const gbfs = require('@gbfs-analyze');
 
-setInterval(lime.updateLime, 20 * 1000);
-setInterval(gbfs.updateGBFS, 20 * 1000);
+setInterval(lime.updateLime, constants.general.update_interval);
+setInterval(gbfs.updateGBFS, constants.general.update_interval);
