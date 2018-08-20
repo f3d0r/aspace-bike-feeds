@@ -1,9 +1,9 @@
 var request = require('request');
-const gbfs = require('@gbfs');
+const gbfs = require('@gbfs-feeds');
 var sql = require('@sql');
 
 module.exports = {
-    updateGBFS: function () {
+    update: function () {
         gbfs.feed.systems.forEach(function (system) {
             getBikes(system, function (bikes) {
                 sql.remove.regularDelete('bike_locs', ['company'], [system.company], function (rows) {

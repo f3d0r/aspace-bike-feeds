@@ -13,9 +13,11 @@
     "@limebike": "misc/limebike",
     "@config": "config",
     "@sql": "database/sqlActions",
-    "@gbfs": "config/gbfs",
-    "@gbfs-analyze": "misc/gbfsAnalyze",
-    "@file-conversion": "misc/fileConversion"
+    "@gbfs-feeds": "config/gbfs",
+    "@gbfs": "misc/gbfsAnalyze",
+    "@file-conversion": "misc/fileConversion",
+    "@skip": "misc/skipScooters",
+    "@spin": "misc/spinBikes"
   },
   "_moduleDirectories": [
     "node_modules"

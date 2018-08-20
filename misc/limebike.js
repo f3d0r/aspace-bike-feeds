@@ -3,7 +3,7 @@ var request = require('request');
 var sql = require('@sql');
 
 module.exports = {
-    updateLime: function () {
+    update: function () {
         constants.limebike.regions.forEach(function (currentCity) {
             getBikes(currentCity, function (response) {
                 formattedBikes = [];

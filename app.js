@@ -1,7 +1,11 @@
 require('module-alias/register');
 const constants = require('@config');
-var lime = require('@limebike');
-const gbfs = require('@gbfs-analyze');
+const lime = require('@limebike');
+const gbfs = require('@gbfs');
+const skip = require('@skip');
+const spin = require('@spin');
 
-setInterval(lime.updateLime, constants.general.update_interval);
-setInterval(gbfs.updateGBFS, constants.general.update_interval);
+setInterval(lime.update, constants.general.update_interval);
+setInterval(gbfs.update, constants.general.update_interval);
+setInterval(skip.update, constants.general.update_interval);
+setInterval(spin.update, constants.general.update_interval);

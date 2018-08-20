@@ -8,6 +8,12 @@ module.exports = {
         token: 'limebike-PMc3qGEtAAXqJa',
         regions: ['Seattle', 'Washington DC Proper'],
     },
+    skip_scooters: {
+        url: 'https://us-central1-waybots-production.cloudfunctions.net/dcFreeBikeStatus'
+    },
+    spin_bikes: {
+        url: 'https://web.spin.pm/api/gbfs/v1/free_bike_status',
+    },
     mysql_config: {
         ADMIN_TABLE: 'aspace_admins'
     },
@@ -27,6 +33,6 @@ module.exports = {
         }
     },
     general: {
-        update_interval: 20 * 1000
+        update_interval: 5 * 1000
     }
 }
