@@ -1,6 +1,4 @@
 var db = require('./db');
-var mysql = require('mysql');
-var uniqueString = require('unique-string');
 
 module.exports = {
     insert: {
@@ -52,20 +50,6 @@ module.exports = {
                         noneFoundCB();
                     else
                         successCB(rows);
-                });
-                connection.release();
-            });
-        },
-        selectRadius: function (database, lat, lng, miles, successCB, noneFoundCB, failCB) {
-            db.getConnection(function (err, connection) {
-                var sql = "SELECT *, ( 3959 * acos( cos( radians(?) ) * cos( radians( `lat` ) ) * cos( radians( `lng` ) - radians(?) ) + sin( radians(?) ) * sin(radians(`lat`)) ) ) AS distance FROM " + connection.escapeId(database) + "  HAVING distance < ?"
-                connection.query(sql, [lat, lng, lat, miles], function (error, rows) {
-                    if (error)
-                        return failCB(error);
-                    if (rows.length == 0)
-                        noneFoundCB();
-                    else
-                        successCB(rows)
                 });
                 connection.release();
             });
