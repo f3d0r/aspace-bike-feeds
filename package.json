@@ -17,7 +17,8 @@
     "@gbfs": "misc/gbfsAnalyze",
     "@file-conversion": "misc/fileConversion",
     "@skip": "misc/skipScooters",
-    "@spin": "misc/spinBikes"
+    "@spin": "misc/spinBikes",
+    "@jump": "misc/jumpBikes"
   },
   "_moduleDirectories": [
     "node_modules"

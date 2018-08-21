@@ -8,6 +8,9 @@ module.exports = {
         token: 'limebike-PMc3qGEtAAXqJa',
         regions: ['Seattle', 'Washington DC Proper'],
     },
+    jump_bikes: {
+        url: 'https://dc.jumpmobility.com/opendata/free_bike_status.json'
+    },
     skip_scooters: {
         url: 'https://us-central1-waybots-production.cloudfunctions.net/dcFreeBikeStatus'
     },

@@ -74,5 +74,10 @@ module.exports = {
                 connection.release();
             });
         }
+    },
+    compare: {
+        getDeletions: function (oldBikes, newBikes) {
+            // var deletions =
+        }
     }
 }

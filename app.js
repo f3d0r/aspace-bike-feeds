@@ -4,6 +4,7 @@ const lime = require('@limebike');
 const gbfs = require('@gbfs');
 const skip = require('@skip');
 const spin = require('@spin');
+const jump = require('@jump');
 
 setTimeout(function () {
     setInterval(lime.update, constants.general.update_interval);
@@ -18,9 +19,9 @@ setTimeout(function () {
 }, 5000);
 
 setTimeout(function () {
-    setInterval(gbfs.update, constants.general.update_interval);
+    setInterval(jump.update, constants.general.update_interval);
 }, 7500);
 
-
-
-
+setTimeout(function () {
+    setInterval(gbfs.update, constants.general.update_interval);
+}, 10000);
