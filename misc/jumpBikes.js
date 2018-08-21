@@ -13,12 +13,9 @@ module.exports = {
                 sqlKeys = ['company', 'region', 'id', 'num', 'type', 'lat', 'lng'];
                 sql.insert.addObjects('bike_locs', sqlKeys, formattedBikes, function (results) {
                     console.log("Updated Jump Bikes for Washington DC at " + new Date());
-                }, function (error) {
-                })
-            }, function (error) {
-            });
-        }, function (error) {
-        });
+                }, function (error) {})
+            }, function (error) {});
+        }, function (error) {});
     }
 }
 
