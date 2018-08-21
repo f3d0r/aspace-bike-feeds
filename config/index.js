@@ -36,6 +36,6 @@ module.exports = {
         }
     },
     general: {
-        update_interval: 5 * 1000
+        update_interval: 20 * 1000
     }
 }

@@ -6,22 +6,12 @@ const skip = require('@skip');
 const spin = require('@spin');
 const jump = require('@jump');
 
-setTimeout(function () {
-    setInterval(lime.update, constants.general.update_interval);
-}, 0);
+setInterval(lime.update, constants.general.update_interval);
 
-setTimeout(function () {
-    setInterval(skip.update, constants.general.update_interval);
-}, 2500);
+setInterval(skip.update, constants.general.update_interval);
 
-setTimeout(function () {
-    setInterval(spin.update, constants.general.update_interval);
-}, 5000);
+setInterval(spin.update, constants.general.update_interval);
 
-setTimeout(function () {
-    setInterval(jump.update, constants.general.update_interval);
-}, 7500);
+setInterval(jump.update, constants.general.update_interval);
 
-setTimeout(function () {
-    setInterval(gbfs.update, constants.general.update_interval);
-}, 10000);
+setInterval(gbfs.update, constants.general.update_interval);
