@@ -24,11 +24,6 @@ module.exports = {
         DATABASE_IP: '142.93.29.51',
         DATABASE_PORT: 'db_port'
     },
-    geojson: {
-        settings: {
-            Point: ['lat', 'lng']
-        }
-    },
     general: {
         update_interval: 20 * 1000
     }
