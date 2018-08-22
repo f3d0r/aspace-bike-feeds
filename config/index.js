@@ -1,7 +1,4 @@
 module.exports = {
-    express: {
-        RESPONSE_TIMEOUT_MILLI: 30000
-    },
     limebike: {
         url: 'https://lime.bike/api/partners/v1/bikes',
         token_prefix: 'Bearer',
@@ -16,9 +13,6 @@ module.exports = {
     },
     spin_bikes: {
         url: 'https://web.spin.pm/api/gbfs/v1/free_bike_status',
-    },
-    mysql_config: {
-        ADMIN_TABLE: 'aspace_admins'
     },
     slack: {
         webhook: '***REMOVED***'
