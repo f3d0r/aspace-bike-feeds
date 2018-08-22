@@ -24,6 +24,9 @@ module.exports = {
 function getBikes(currentRegion, successCB, failCB) {
     var options = {
         method: 'GET',
+        headers: {
+            'user-agent': 'insomnia/6.0.2'
+        },
         url: constants.limebike.url,
         qs: {
             region: currentRegion

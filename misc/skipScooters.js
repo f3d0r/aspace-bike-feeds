@@ -22,6 +22,9 @@ module.exports = {
 function getScooters(url, successCB, failCB) {
     var options = {
         method: 'GET',
+        headers: {
+            'user-agent': 'insomnia/6.0.2'
+        },
         url: url,
     };
     request(options, function (error, response, body) {
