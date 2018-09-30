@@ -25,6 +25,6 @@ module.exports = {
         DATABASE_PORT: 'db_port'
     },
     general: {
-        update_interval: 20 * 1000
+        update_interval: 15 * 1000
     }
 }

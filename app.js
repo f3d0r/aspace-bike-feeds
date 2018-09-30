@@ -14,4 +14,4 @@ setInterval(spin.update, constants.general.update_interval);
 
 setInterval(jump.update, constants.general.update_interval);
 
-setInterval(gbfs.update, constants.general.update_interval);
+// setInterval(gbfs.update, constants.general.update_interval);
