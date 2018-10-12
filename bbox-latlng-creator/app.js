@@ -1,7 +1,9 @@
 var turf = require('@turf/turf');
 var fs = require('fs');
+var path = require('path');
 var request = require('request');
-var csv = require('csvtojson')
+var csv = require('csvtojson');
+var rootPath = require('app-root-path');
 
 const feetSpace = 1500;
 
@@ -17,7 +19,18 @@ csv()
                 resolvedGeojson.map(val => turf.bboxPolygon(turf.bbox(val.reqResult)))
             );
             latLngs = getSpacedLatLngs(combinedGeoJson);
-            console.log("LATLNGS LENGTH : " + latLngs.length);
+            output = "";
+            latLngs.forEach(function(currentLatLng) {
+                output += currentLatLng + "\n";
+            })
+            fs.writeFile(path.join(rootPath.path, 'fullLatLngs.txt'), output, function(err) {
+                if (err) {
+                    throw err;
+                } else {
+                    console.log("FILE WRITTEN! TOTAL LENGTH: " + latLngs.length);
+                }
+            });
+            console.log(rootPath.path);
         });
     });
 

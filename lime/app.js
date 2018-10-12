@@ -1,14 +1,28 @@
 var request = require('request');
+const express = require('express');
+const delay = require('delay');
+const bodyParser = require('body-parser');
+var Cookie = require('request-cookies').Cookie;
 
-const express = require('express')
-const app = express()
-const port = 3000
+
+const app = express();
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
+const port = 3005
 
 const baseURL = 'https://web-production.lime.bike/api/rider/'
 const phoneNumber = 'twilio_origin_phone_number'
+var jar = request.jar();
 
+var currToken = undefined;
 
-startVerify();
+var verifying = true;
+
+(async () => {
+    await delay(2000);
+    startVerify()
+})();
 
 function startVerify() {
     request(baseURL + 'v1/login?phone=' + phoneNumber, function (error, response, body) {
@@ -16,8 +30,73 @@ function startVerify() {
     });
 }
 
-app.get('/received_text', function(req, res) {
-
+app.post('/received_text', function (req, res) {
+    var response = req.body.Body;
+    var code = response.substring(0, response.indexOf(' '));
+    console.log("CODE: \'" + code + '\'');
+    confirmPhone(code);
+    res.send("OK");
 });
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+app.get('/', function (req, res) {
+    res.send("OK!");
+});
+
+app.listen(port, function () {
+    console.log(`Example app listening on port ${port}!`);
+});
+
+function confirmPhone(code) {
+    var options = {
+        method: 'POST',
+        url: baseURL + 'v1/login',
+        qs: {
+            phone: phoneNumber,
+            login_code: code
+        },
+        headers: {
+            'content-type': 'application/json'
+        }
+    };
+
+    request(options, function (error, response, body) {
+        if (error) throw new Error(error);
+
+        body = JSON.parse(body);
+        console.log(body);
+        var cookies = response.headers['set-cookie'];
+        setCookie(cookies[0].key, cookies.value)
+
+        currToken = body.token;
+        getBikes(47.608013, -122.335167)
+    });
+}
+
+function setCookie(cookieKey, cookieValue) {
+    jar.setCookie(request.cookie(cookieKey + "=" + cookieValue), "https://web-production.lime.bike/api/rider/v1/views/main");
+}
+
+function getBikes(lat, lng) {
+    var options = {
+        method: 'GET',
+        url: baseURL + 'v1/views/main',
+        qs: {
+            map_center_latitude: lat,
+            map_center_longitude: lng,
+            user_latitude: lat,
+            user_longitude: lng
+        },
+        headers: {
+            authorization: 'Bearer ' + currToken
+        },
+        jar: 'JAR'
+    };
+
+    request(options, function (error, response, body) {
+        if (error) throw new Error(error);
+
+        console.log(body);
+    });
+
+
+}

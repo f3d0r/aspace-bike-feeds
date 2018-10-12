@@ -25,6 +25,7 @@
     ],
     "dependencies": {
         "@turf/turf": "^5.1.6",
+        "app-root-path": "^2.1.0",
         "csvtojson": "^2.0.8",
         "express": "^4.16.4",
         "module-alias": "^2.1.0",
