@@ -24,7 +24,7 @@ var latLngs = undefined;
 fs.readFile(path.join(rootPath.path, 'fullLatLngs.txt'), 'utf-8', function (err, data) {
     latLngs = data.split("\n");
     latLngs = latLngs.map(val => [val.substring(0, val.indexOf(',')), val.substring(val.indexOf(',') + 1, val.length)]);
-    // startVerify();
+    startVerify();
 });
 
 function startVerify() {
