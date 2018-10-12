@@ -24,9 +24,12 @@
         "node_modules"
     ],
     "dependencies": {
+        "@turf/turf": "^5.1.6",
         "csvtojson": "^2.0.8",
+        "express": "^4.16.4",
         "module-alias": "^2.1.0",
         "mysql": "^2.16.0",
+        "recursive-readdir": "^2.2.2",
         "request": "^2.88.0"
     }
 }
