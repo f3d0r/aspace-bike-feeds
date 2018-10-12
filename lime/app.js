@@ -71,7 +71,18 @@ function confirmPhone(code) {
         setCookie(cookies[0].key, cookies.value)
 
         currToken = body.token;
-        getBikes(47.608013, -122.335167)
+        
+        var reqs = [];
+        latLngs.forEach(function(currentLatLng) {
+            reqs.push(getBikes(currentLatLng[1], currentLatLng[0]));
+        });
+        Promise.all(reqs)
+            .then(function(responses) {
+                console.log(responses.length);
+            })
+            .catch(function(error) {
+                console.log("ERROR: " + error);
+            });
     });
 }
 
@@ -95,9 +106,13 @@ function getBikes(lat, lng) {
         jar: 'JAR'
     };
 
-    request(options, function (error, response, body) {
-        if (error) throw new Error(error);
-
-        console.log(body);
+    return new Promise(function(resolve, reject) {
+        request(options, function (error, response, body) {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(JSON.parse(body).data.attributes.nearby_locked_bikes.length);
+            }
+        });
     });
 }
