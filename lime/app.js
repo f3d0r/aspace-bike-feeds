@@ -87,6 +87,8 @@ function confirmPhone(code) {
 }
 
 function setCookie(cookieKey, cookieValue) {
+    console.log("NEW COOKIE:");
+    console.log(cookieKey + "=" + cookieValue);
     jar.setCookie(request.cookie(cookieKey + "=" + cookieValue), "https://web-production.lime.bike/api/rider/v1/views/main");
 }
 
@@ -111,7 +113,7 @@ function getBikes(lat, lng) {
             if (error) {
                 reject(error);
             } else {
-                resolve(JSON.parse(body).data.attributes.nearby_locked_bikes.length);
+                resolve(JSON.parse(body).data);
             }
         });
     });

@@ -5,7 +5,7 @@ var request = require('request');
 var csv = require('csvtojson');
 var rootPath = require('app-root-path');
 
-const feetSpace = 1500;
+const feetSpace = 2500;
 
 const milesChunk = feetSpace / 5280;
 const locationsCSVLoc = "locations.csv";
