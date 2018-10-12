@@ -1,28 +1,31 @@
 var request = require('request');
 const express = require('express');
-const delay = require('delay');
 const bodyParser = require('body-parser');
-var Cookie = require('request-cookies').Cookie;
-
+var fs = require('fs');
+var path = require('path');
+var rootPath = require('app-root-path');
 
 const app = express();
+
 app.use(bodyParser.urlencoded({
     extended: false
 }));
-const port = 3005
+const port = 3005;
 
 const baseURL = 'https://web-production.lime.bike/api/rider/'
 const phoneNumber = 'twilio_origin_phone_number'
 var jar = request.jar();
 
 var currToken = undefined;
-
 var verifying = true;
 
-(async () => {
-    await delay(2000);
-    startVerify()
-})();
+var latLngs = undefined;
+
+fs.readFile(path.join(rootPath.path, 'fullLatLngs.txt'), 'utf-8', function (err, data) {
+    latLngs = data.split("\n");
+    latLngs = latLngs.map(val => [val.substring(0, val.indexOf(',')), val.substring(val.indexOf(',') + 1, val.length)]);
+    // startVerify();
+});
 
 function startVerify() {
     request(baseURL + 'v1/login?phone=' + phoneNumber, function (error, response, body) {
@@ -97,6 +100,4 @@ function getBikes(lat, lng) {
 
         console.log(body);
     });
-
-
 }
