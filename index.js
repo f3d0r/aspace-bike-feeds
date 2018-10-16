@@ -16,9 +16,7 @@ var options = {
 };
 
 cloudscraper.request(options, function (err, response, body) {
-    if (err) {
-        throw err;
-    } else {
-        console.log(response.body);
-    }
+    console.log("ERR  : " + err);
+    console.log("RESP : " + response);
+    console.log("BODY : " + body);
 });
