@@ -7,7 +7,7 @@ var options = {
         'content-type': 'application/json',
         'app-version': '3.0.5',
         'device-id': '1',
-        'platform': 'ios'
+        platform: 'ios'
     },
     body: {
         email: 'me@f3d0r.com'
@@ -16,7 +16,13 @@ var options = {
 };
 
 cloudscraper.request(options, function (err, response, body) {
-    console.log("ERR  : " + err);
-    console.log("RESP : " + response);
-    console.log("BODY : " + body);
+    if (err) {
+        console.log(JSON.stringify(err));
+    } else {
+        response = JSON.stringify(response) + "";
+        var begString = "\"id\":\"";
+        var endString = "\",\"expires_at\"";
+        var id = response.substring(response.indexOf(begString) + begString.length, response.indexOf(endString));
+        console.log(id);
+    }
 });
