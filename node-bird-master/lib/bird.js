@@ -15,6 +15,7 @@ class Bird {
                 'App-Version': '3.0.5'
             }
         })
+        this.request.defaults.headers.common["User-Agent"] = "insomnia/6.0.2"
     }
 
     setAccessToken(accessToken) {
