@@ -10,7 +10,7 @@ var options = {
         platform: 'ios'
     },
     body: {
-        email: 'me@f3d0r.com'
+        email: 'fedor@rupayamail.com'
     },
     json: true
 };
@@ -23,6 +23,10 @@ cloudscraper.request(options, function (err, response, body) {
         var begString = "\"id\":\"";
         var endString = "\",\"expires_at\"";
         var id = response.substring(response.indexOf(begString) + begString.length, response.indexOf(endString));
-        console.log(id);
+        if (id.indexOf("statusCode") == -1) {
+            console.log(id);
+        } else {
+            throw Error("Unable to login!");
+        }
     }
 });
