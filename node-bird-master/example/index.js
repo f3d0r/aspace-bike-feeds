@@ -1,18 +1,19 @@
 const Bird = require('../')
 const bird = new Bird();
 
-let RATE_LIMIT_BASE = 100; //100ms separation
+// let RATE_LIMIT_BASE = 100; //100ms separation
 
 const prompt = require("prompt-async");
 
 async function init() {
     try {
-        await bird.login('me@f3d0r.com')
-        prompt.start();
-        const {
-            verifyCode
-        } = await prompt.get(['verifyCode']);
-        var email = await bird.verifyEmail(verifyCode)
+        // await bird.login('me@f3d0r.com')
+        // prompt.start();
+        // const {
+        //     verifyCode
+        // } = await prompt.get(['verifyCode']);
+        // var email = await bird.verifyEmail(verifyCode)
+        bird.setAccessToken("K9Clr8yuKR8Ocg4oy09B9BFsQ")
         var reqs = [];
         for (var index = 1; index <= 300; index++) {
             reqs.push(bird.getScootersNearby(45.512794, -122.679565, 5000));
