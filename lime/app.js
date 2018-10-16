@@ -68,7 +68,7 @@ function confirmPhone(code) {
         body = JSON.parse(body);
         console.log(body);
         var cookies = response.headers['set-cookie'];
-        setCookie(cookies[0].key, cookies.value)
+        setCookie(cookies[0].key, cookies[0].value)
 
         currToken = body.token;
         
