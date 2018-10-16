@@ -1,6 +1,9 @@
 const axios = require('axios')
 const faker = require('faker')
 const moment = require('moment')
+const axiosCloudflare = require('axios-cloudflare');
+
+axiosCloudflare(axios);
 
 class Bird {
     constructor() {
