@@ -14,7 +14,7 @@ async function init() {
         } = await prompt.get(['verifyCode']);
         var email = await bird.verifyEmail(verifyCode)
         var reqs = [];
-        for (var index = 1; index <= 300; index++) {
+        for (var index = 1; index <= 1; index++) {
             reqs.push(bird.getScootersNearby(45.512794, -122.679565, 5000));
         }
         Promise.all(reqs)
