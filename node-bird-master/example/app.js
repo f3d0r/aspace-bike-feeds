@@ -10,7 +10,7 @@ var options = {
         platform: 'ios'
     },
     body: {
-        email: 'fedor@rupayamail.com'
+        email: 'me@f3d0r.com'
     },
     json: true
 };
