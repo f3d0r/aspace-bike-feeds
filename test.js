@@ -1,9 +1,21 @@
 var imaps = require('imap-simple');
 var request = require('request');
 var sleep = require('sleep-promise');
+var csvToJson = require('csvtojson');
+var turf = require('@turf/turf');
+
+const pLimit = require('p-limit');
+
+const limit = pLimit(500);
 
 const email = 'parcareapp@gmail.com';
 const deviceId = 'e2c02f06-b414-53ba-9dde-1cfa4b1e0e55'
+const emailWaitSecs = 5;
+
+const parkingLocsFile = 'parkopedia_parking.csv'
+
+const bikeSearchRadiusMiles = 1;
+
 
 var loginOptions = {
     method: 'POST',
@@ -34,10 +46,15 @@ var config = {
 init();
 
 async function init() {
+    const parkingLocs = await csvToJson().fromFile(parkingLocsFile);
+    reloadScooters(parkingLocs)
+}
+
+async function reloadScooters(parkingLocs) {
     var response = await performRequest(loginOptions);
     console.log(response);
     console.log("Waiting...");
-    await sleep(10000);
+    await sleep(emailWaitSecs * 1000);
     console.log("Done waiting...");
     var token = await getEmailVerifyCode();
     console.log("TOKEN: " + token);
@@ -45,10 +62,56 @@ async function init() {
     var auth = await performRequest(getVerifyOptions(token));
     var authToken = auth.token;
     console.log("AUTH TOKEN: " + authToken);
-    var scooterInfo = await (performRequest(getScooterOptions(45.512794, -122.679565, 5000, authToken)));
-    console.log("SCOOTER INFO: ");
-    console.log(scooterInfo);
+    circleGeoJSON = [];
+    parkingLocs.forEach(function (currentLoc) {
+        var center = [currentLoc.lng, currentLoc.lat];
+        var radius = bikeSearchRadiusMiles;
+        var options = {
+            steps: 6,
+            units: 'miles'
+        };
+        var circle = turf.circle(center, radius, options);
+        circleGeoJSON.push(circle);
+    });
+    lngLats = [];
+    circleGeoJSON.forEach(function (currentGeoJSON) {
+        currentGeoJSON.geometry.coordinates[0].forEach(function (currentLngLat) {
+            lngLats.push({
+                'lng': currentLngLat[0],
+                'lat': currentLngLat[1],
+            });
+        })
+    });
+
+    console.log(lngLats.length);
+    var reqs = []
+    lngLats.forEach(function (currentLoc) {
+        reqs.push(limit(() => performRequest(getScooterOptions(currentLoc.lat, currentLoc.lng, 10000, authToken))));
+    });
+
+    console.log("-------- STARTED!");
+    Promise.all(reqs)
+        .then(function (responses) {
+            console.log("-------- ENDED!");
+            var total = 0;
+            uniqueBirds = [];
+            responses.forEach(function (response) {
+                response.birds.forEach(function(currentBird) {
+                    if (currentBird != {} && currentBird != [] && typeof currentBird != 'undefined') {
+                        uniqueBirds.push(currentBird.id);
+                    }
+                })
+            })
+            console.log("UNIQUE BIRDS: " + countUnique(uniqueBirds));
+        })
+        .catch(function (error) {
+            throw error;
+        });
 }
+
+function countUnique(iterable) {
+    return new Set(iterable).size;
+  }
 
 async function getEmailVerifyCode() {
     return new Promise(function (resolve, reject) {
