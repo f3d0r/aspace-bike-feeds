@@ -1,21 +1,27 @@
+require('module-alias/register');
 var imaps = require('imap-simple');
 var request = require('request');
 var sleep = require('sleep-promise');
-var csvToJson = require('csvtojson');
 var turf = require('@turf/turf');
+var pLimit = require('p-limit');
+var perfy = require('perfy');
+var timber = require('timber');
 
-const pLimit = require('p-limit');
+var sql = require('@sql');
 
-const limit = pLimit(500);
+if (process.env.LOCAL == "FALSE") {
+    const transport = new timber.transports.HTTPS(process.env.TIMBER_TOKEN);
+    timber.install(transport);
+}
 
-const email = 'parcareapp@gmail.com';
+const limit = pLimit(process.env.CONCURRENT_REQUESTS);
+
 const deviceId = 'e2c02f06-b414-53ba-9dde-1cfa4b1e0e55'
-const emailWaitSecs = 5;
+const emailWaitSecs = process.env.EMAIL_WAIT_SECS;
+const bikeSearchRadiusMiles = process.env.BIKE_SEARCH_RADIUS_MILES;
 
-const parkingLocsFile = 'parkopedia_parking.csv'
-
-const bikeSearchRadiusMiles = 1;
-
+process.env.EMAIL = "parcareapp@gmail.com";
+process.env.EMAIL_PASS = "t0Qh%UinRTEvZe3S#a5Q0%";
 
 var loginOptions = {
     method: 'POST',
@@ -27,15 +33,15 @@ var loginOptions = {
         'content-type': 'application/json'
     },
     body: {
-        email: email
+        email: process.env.EMAIL
     },
     json: true
 };
 
 var config = {
     imap: {
-        user: email,
-        password: 't0Qh%UinRTEvZe3S#a5Q0%',
+        user: process.env.EMAIL,
+        password: process.env.EMAIL_PASS,
         host: 'imap.gmail.com',
         port: 993,
         tls: true,
@@ -43,26 +49,30 @@ var config = {
     }
 };
 
-init();
+reloadScooters();
 
-async function init() {
-    const parkingLocs = await csvToJson().fromFile(parkingLocsFile);
-    reloadScooters(parkingLocs)
-}
+async function reloadScooters() {
+    parkingLocs = await (sql.select.regularSelect('parkopedia_parking', '*', ['id'], ['>'], ['0'], null));
+    parkingLocs = parkingLocs[0];
+    console.log("TOTAL PARKING SPOTS : " + parkingLocs.length);
 
-async function reloadScooters(parkingLocs) {
     var response = await performRequest(loginOptions);
-    console.log(response);
-    console.log("Waiting...");
+    console.log("USER ID: " + response.id);
+    console.log("Waiting for email ...");
+    
     await sleep(emailWaitSecs * 1000);
-    console.log("Done waiting...");
+    
+    console.log("Checking email   ...");
     var token = await getEmailVerifyCode();
-    console.log("TOKEN: " + token);
-    console.log("Verifying token...");
+    console.log("TOKEN RECEIVED   : " + token);
+    
+    console.log("Verifying token  ...");
     var auth = await performRequest(getVerifyOptions(token));
     var authToken = auth.token;
     console.log("AUTH TOKEN: " + authToken);
+    
     circleGeoJSON = [];
+    
     parkingLocs.forEach(function (currentLoc) {
         var center = [currentLoc.lng, currentLoc.lat];
         var radius = bikeSearchRadiusMiles;
@@ -73,6 +83,7 @@ async function reloadScooters(parkingLocs) {
         var circle = turf.circle(center, radius, options);
         circleGeoJSON.push(circle);
     });
+
     lngLats = [];
     circleGeoJSON.forEach(function (currentGeoJSON) {
         currentGeoJSON.geometry.coordinates[0].forEach(function (currentLngLat) {
@@ -89,20 +100,22 @@ async function reloadScooters(parkingLocs) {
         reqs.push(limit(() => performRequest(getScooterOptions(currentLoc.lat, currentLoc.lng, 10000, authToken))));
     });
 
-    console.log("-------- STARTED!");
+    perfy.start('bird_reqs');
     Promise.all(reqs)
         .then(function (responses) {
-            console.log("-------- ENDED!");
             var total = 0;
             uniqueBirds = [];
             responses.forEach(function (response) {
-                response.birds.forEach(function(currentBird) {
+                response.birds.forEach(function (currentBird) {
                     if (currentBird != {} && currentBird != [] && typeof currentBird != 'undefined') {
                         uniqueBirds.push(currentBird.id);
                     }
                 })
             })
-            console.log("UNIQUE BIRDS: " + countUnique(uniqueBirds));
+            var result = perfy.end('bird_reqs');
+            console.log("UNIQUE BIRDS : " + countUnique(uniqueBirds));
+            console.log("SCRIPT TIME  : " + result.time + " sec.");
+            process.exit();
         })
         .catch(function (error) {
             throw error;
@@ -111,7 +124,7 @@ async function reloadScooters(parkingLocs) {
 
 function countUnique(iterable) {
     return new Set(iterable).size;
-  }
+}
 
 async function getEmailVerifyCode() {
     return new Promise(function (resolve, reject) {
