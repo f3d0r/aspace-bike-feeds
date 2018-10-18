@@ -16,12 +16,9 @@ if (process.env.LOCAL == "FALSE") {
 
 const limit = pLimit(process.env.CONCURRENT_REQUESTS);
 
-const deviceId = 'e2c02f06-b414-53ba-9dde-1cfa4b1e0e55'
+const deviceId = process.env.DEVICE_ID;
 const emailWaitSecs = process.env.EMAIL_WAIT_SECS;
 const bikeSearchRadiusMiles = process.env.BIKE_SEARCH_RADIUS_MILES;
-
-process.env.EMAIL = "parcareapp@gmail.com";
-process.env.EMAIL_PASS = "t0Qh%UinRTEvZe3S#a5Q0%";
 
 var loginOptions = {
     method: 'POST',
