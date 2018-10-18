@@ -59,20 +59,20 @@ async function reloadScooters() {
     var response = await performRequest(loginOptions);
     console.log("USER ID: " + response.id);
     console.log("Waiting for email ...");
-    
+
     await sleep(emailWaitSecs * 1000);
-    
+
     console.log("Checking email   ...");
     var token = await getEmailVerifyCode();
     console.log("TOKEN RECEIVED   : " + token);
-    
+
     console.log("Verifying token  ...");
     var auth = await performRequest(getVerifyOptions(token));
     var authToken = auth.token;
     console.log("AUTH TOKEN: " + authToken);
-    
+
     circleGeoJSON = [];
-    
+
     parkingLocs.forEach(function (currentLoc) {
         var center = [currentLoc.lng, currentLoc.lat];
         var radius = bikeSearchRadiusMiles;
@@ -101,25 +101,20 @@ async function reloadScooters() {
     });
 
     perfy.start('bird_reqs');
-    Promise.all(reqs)
-        .then(function (responses) {
-            var total = 0;
-            uniqueBirds = [];
-            responses.forEach(function (response) {
-                response.birds.forEach(function (currentBird) {
-                    if (currentBird != {} && currentBird != [] && typeof currentBird != 'undefined') {
-                        uniqueBirds.push(currentBird.id);
-                    }
-                })
-            })
-            var result = perfy.end('bird_reqs');
-            console.log("UNIQUE BIRDS : " + countUnique(uniqueBirds));
-            console.log("SCRIPT TIME  : " + result.time + " sec.");
-            process.exit();
-        })
-        .catch(function (error) {
-            throw error;
+    responses = await Promise.all(reqs);
+    var total = 0;
+    uniqueBirds = [];
+    responses.forEach(function (response) {
+        response.birds.forEach(function (currentBird) {
+            if (currentBird != {} && currentBird != [] && typeof currentBird != 'undefined') {
+                uniqueBirds.push(currentBird.id);
+            }
         });
+    });
+    var result = perfy.end('bird_reqs');
+    console.log("UNIQUE BIRDS : " + countUnique(uniqueBirds));
+    console.log("SCRIPT TIME  : " + result.time + " sec.");
+    process.exit();
 }
 
 function countUnique(iterable) {
