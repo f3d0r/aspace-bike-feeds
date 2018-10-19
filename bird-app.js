@@ -103,16 +103,23 @@ async function reloadScooters() {
 
     responses = await Promise.all(reqs);
     uniqueBirds = [];
+    var undefinedBirds = 0;
     responses.forEach(function (response) {
-        response.birds.forEach(function (currentBird) {
-            if (currentBird != {} && currentBird != [] && !uniqueBirds.some(item => item.id == currentBird.id)) {
-                uniqueBirds.push(currentBird);
-            }
-        });
+        if (typeof response.birds != 'undefined' && response.birds.length != {}) {
+            response.birds.forEach(function (currentBird) {
+                if (currentBird != {} && currentBird != [] && !uniqueBirds.some(item => item.id == currentBird.id)) {
+                    uniqueBirds.push(currentBird);
+                }
+            });
+        } else {
+            undefinedBirds++;
+        }
     });
+
     var result = perfy.end('bird_reqs');
     console.log("UNIQUE BIRDS : " + uniqueBirds.length);
     console.log("SCRIPT TIME  : " + result.time + " sec.");
+    console.log("UNDEFINED BIRDS  : " + undefinedBirds);
     var dbBirds = await sql.select.regularSelect('bike_locs', '*', ['company'], ['='], ['Bird']);
 
     var results = compareBirds(uniqueBirds, dbBirds[0]);
