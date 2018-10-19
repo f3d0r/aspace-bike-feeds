@@ -49,6 +49,7 @@ var config = {
 reloadScooters();
 
 async function reloadScooters() {
+    perfy.start('bird_reqs');
     parkingLocs = await (sql.select.regularSelect('parkopedia_parking', '*', ['id'], ['>'], ['0'], null));
     parkingLocs = parkingLocs[0];
     console.log("TOTAL PARKING SPOTS : " + parkingLocs.length);
@@ -97,7 +98,6 @@ async function reloadScooters() {
         reqs.push(limit(() => performRequest(getScooterOptions(currentLoc.lat, currentLoc.lng, 10000, authToken))));
     });
 
-    perfy.start('bird_reqs');
     responses = await Promise.all(reqs);
     uniqueBirds = [];
     responses.forEach(function (response) {
@@ -110,7 +110,6 @@ async function reloadScooters() {
     var result = perfy.end('bird_reqs');
     console.log("UNIQUE BIRDS : " + uniqueBirds.length);
     console.log("SCRIPT TIME  : " + result.time + " sec.");
-    console.log(JSON.stringify(uniqueBirds[0]));
     var dbBirds = await sql.select.regularSelect('bike_locs', '*', ['company'], ['='], ['Bird']);
 
     var results = compareBirds(uniqueBirds, dbBirds[0]);
@@ -138,8 +137,8 @@ async function reloadScooters() {
     var updatePromise = sql.runRaw(toUpdateQueries);
 
     await Promise.all([removePromise, addPromise, updatePromise]);
-    console.log("DONE!");
     await sleep(5000);
+    console.log("DONE!");
     process.exit();
 }
 
