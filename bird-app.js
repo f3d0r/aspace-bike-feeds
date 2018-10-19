@@ -120,7 +120,7 @@ async function reloadScooters() {
 
     var toRemoveQueries = "";
     results.idsToRemove.forEach(function (current) {
-        toRemoveQueries += `DELETE FROM \`bike_locs\` WHERE \`id\` = '${current.id}';`;
+        toRemoveQueries += `DELETE FROM \`bike_locs\` WHERE \`id\` = '${current.id}'; `;
     });
     var removePromise = sql.runRaw(toRemoveQueries);
 
@@ -132,9 +132,8 @@ async function reloadScooters() {
 
     toUpdateQueries = "";
     results.idsToUpdate.forEach(function (current) {
-        toUpdateQueries += `UPDATE \`bikes_locs\` SET \`lat\`='${current.location.latitude}', \`lng\`='${current.location.longitude}'\`, \`battery_level\`='${current.battery_level}' WHERE \`id\`='${current.id}'; `
+        toUpdateQueries += `UPDATE \`bikes_locs\` SET \`lat\`='${current.location.latitude}', \`lng\`='${current.location.longitude}', \`battery_level\`='${current.battery_level}' WHERE \`id\`='${current.id}'; `
     });
-
 
     var updatePromise = sql.runRaw(toUpdateQueries);
 
