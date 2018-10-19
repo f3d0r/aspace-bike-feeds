@@ -6,8 +6,15 @@ var turf = require('@turf/turf');
 var pLimit = require('p-limit');
 var perfy = require('perfy');
 var timber = require('timber');
+var express = require("express");
+var bodyParser = require('body-parser');
+var waitUntil = require('async-wait-until');
+var haversine = require('haversine')
 
 var sql = require('@sql');
+
+var token = undefined;
+var printed = false;
 
 if (process.env.LOCAL == "FALSE") {
     const transport = new timber.transports.HTTPS(process.env.TIMBER_TOKEN);
@@ -39,10 +46,10 @@ var config = {
     imap: {
         user: process.env.EMAIL,
         password: process.env.EMAIL_PASS,
-        host: 'imap.gmail.com',
+        host: 'imap.mail.com',
         port: 993,
         tls: true,
-        authTimeout: 3000
+        authTimeout: 6000
     }
 };
 
@@ -58,10 +65,8 @@ async function reloadScooters() {
     console.log("USER ID: " + response.id);
     console.log("Waiting for email ...");
 
-    await sleep(emailWaitSecs * 1000);
+    var token = await waitForToken();
 
-    console.log("Checking email   ...");
-    var token = await getEmailVerifyCode();
     console.log("TOKEN RECEIVED   : " + token);
 
     console.log("Verifying token  ...");
@@ -148,7 +153,19 @@ function compareBirds(localBirds, dbBirds) {
     localBirds.forEach(function (currentBird) {
         if (dbBirds.some(item => item.id == currentBird.id)) {
             var similarBird = dbBirds.filter(bird => bird.id == currentBird.id);
-            if (similarBird[0].lat != currentBird.location.latitude || similarBird[0].lng != currentBird.location.longitude || similarBird[0].battery != currentBird.battery_level) {
+            if (similarBird[0].lat != currentBird.location.latitude || similarBird[0].lng != currentBird.location.longitude || similarBird[0].battery_level != currentBird.battery_level) {
+                if (!printed) {
+                    console.log("SIMILAR BIRD LAT: " + similarBird[0].lat);
+                    console.log("SIMILAR BIRD LNG: " + similarBird[0].lng);
+                    console.log("SIMILAR BIRD BATTERY: " + similarBird[0].battery_level);
+                    console.log("CURRENT BIRD LAT: " + currentBird.location.latitude);
+                    console.log("CURRENT BIRD LNG: " + currentBird.location.longitude);
+                    console.log("CURRENT BIRD BATTERY: " + currentBird.battery_level);
+                    console.log("LATS EQUAL: " + similarBird[0].lat == currentBird.location.latitude);
+                    console.log("LNGS EQUAL: " + similarBird[0].lng == currentBird.location.longitude);
+                    console.log("BATTERIES EQUAL: " + similarBird[0].battery_level == currentBird.location.battery_level);
+                    printed = true;
+                }
                 idsToUpdate.push(currentBird);
             }
         }
@@ -166,39 +183,6 @@ function compareBirds(localBirds, dbBirds) {
         idsToAdd,
         idsToRemove
     }
-}
-
-async function getEmailVerifyCode() {
-    return new Promise(function (resolve, reject) {
-        imaps.connect(config).then(function (connection) {
-            return connection.openBox('INBOX').then(function () {
-                var searchCriteria = [
-                    'ALL'
-                ];
-                var fetchOptions = {
-                    bodies: ['HEADER', 'TEXT'],
-                    markSeen: false
-                };
-                return connection.search(searchCriteria, fetchOptions).then(function (results) {
-                    var messages = results.map(function (res) {
-                        return res.parts.filter(function (part) {
-                            return part;
-                        })[0].body
-                    });
-                    var tokens = [];
-                    messages.forEach(function (current) {
-                        var mostRecentEmail = current;
-                        var begString = '<div style="color: #666">';
-                        var begIndex = mostRecentEmail.indexOf(begString);
-                        var endString = '</div>';
-                        var endIndex = mostRecentEmail.indexOf(endString, begIndex);
-                        tokens.push(mostRecentEmail.substring(begIndex + begString.length, endIndex).trim());
-                    });
-                    resolve(tokens[tokens.length - 1]);
-                });
-            });
-        });
-    });
 }
 
 function sleep(ms) {
@@ -259,4 +243,38 @@ function getVerifyOptions(token) {
         },
         json: true
     };
+}
+
+var app = express();
+app.use(bodyParser.json())
+
+app.post("/", function (req, res) {
+    var emailHtml = req.body.html;
+    var begString = '<div style="color: #666">';
+    var begIndex = emailHtml.indexOf(begString);
+    var endString = '</div>';
+    var endIndex = emailHtml.indexOf(endString, begIndex);
+    currToken = emailHtml.substring(begIndex + begString.length, endIndex).trim();
+    token = currToken;
+    res.status(200).send("OK");
+});
+
+app.listen(3000, () => console.log("Server listening on port 3000!"));
+
+async function waitForToken() {
+    return new Promise(function(resolve, reject) {
+        waitUntil(function() {
+            if (token != undefined) {
+                return token;
+            } else {
+                return false;
+            }
+          }, 15000)
+          .then((result) => {
+            resolve(result);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+    });
 }

@@ -26,10 +26,13 @@
     "dependencies": {
         "@turf/turf": "^5.1.6",
         "app-root-path": "^2.1.0",
+        "async-wait-until": "^1.2.4",
         "cloudscraper": "^1.5.0",
         "csvtojson": "^2.0.8",
         "express": "^4.16.4",
+        "haversine": "^1.1.0",
         "imap-simple": "^4.1.0",
+        "localtunnel": "^1.9.1",
         "module-alias": "^2.1.0",
         "mysql": "^2.16.0",
         "p-limit": "^2.0.0",
