@@ -11,85 +11,89 @@ var waitUntil = require('async-wait-until');
 var haversine = require('haversine');
 
 var sql = require('@sql');
+var requestOptions = require('./bird-request-options');
 
-var token = undefined;
 const locUpdateThresholdMeters = process.env.LOC_UPDATE_THRESHOLD_METERS;
+const limit = pLimit(process.env.CONCURRENT_REQUESTS);
+const deviceId = process.env.DEVICE_ID;
+const bikeSearchRadiusMiles = process.env.BIKE_SEARCH_RADIUS_MILES;
 
 if (process.env.LOCAL == "FALSE") {
     const transport = new timber.transports.HTTPS(process.env.TIMBER_TOKEN);
     timber.install(transport);
 }
 
-const limit = pLimit(process.env.CONCURRENT_REQUESTS);
+var loginToken = undefined;
+var authToken = undefined;
+var requestsOnToken = 0;
 
-const deviceId = process.env.DEVICE_ID;
-const bikeSearchRadiusMiles = process.env.BIKE_SEARCH_RADIUS_MILES;
+var parkingLocs = undefined;
+var circleGeoJSON = [];
 
-var loginOptions = {
-    method: 'POST',
-    url: 'https://api.bird.co/user/login',
-    headers: {
-        'app-version': '3.0.5',
-        'platform': 'ios',
-        'device-id': deviceId,
-        'content-type': 'application/json'
-    },
-    body: {
-        email: process.env.EMAIL
-    },
-    json: true
-};
-
-reloadScooters();
+async function execute() {
+    while (true) {
+        perfy.start('bird_reqs');
+        await reloadScooters();
+        var resultTime = perfy.end('bird_reqs');
+        await sleep(Math.max(0, 45000 - resultTime.fullMilliseconds));
+    }
+}
+execute();
 
 async function reloadScooters() {
-    perfy.start('bird_reqs');
-    parkingLocs = await (sql.select.regularSelect('parkopedia_parking', '*', ['id'], ['>'], ['0'], null));
-    parkingLocs = parkingLocs[0];
-    console.log("TOTAL PARKING SPOTS : " + parkingLocs.length);
+    if (requestsOnToken >= 30 || parkingLocs == undefined || circleGeoJSON == undefined || circleGeoJSON == []) {
+        parkingLocs = await (sql.select.regularSelect('parkopedia_parking', '*', ['id'], ['>'], ['0'], null));
+        parkingLocs = parkingLocs[0];
+        console.log("REFRESHED PARKING SPOTS : " + parkingLocs.length);
 
-    var response = await performRequest(loginOptions);
-    console.log("USER ID: " + response.id);
-    console.log("Waiting for email ...");
+        console.log("CALCULATING PARKING LOC LAT/LNGS")
+        circleGeoJSON = [];
+        parkingLocs.forEach(function (currentLoc) {
+            var center = [currentLoc.lng, currentLoc.lat];
+            var radius = bikeSearchRadiusMiles;
+            var options = {
+                steps: 6,
+                units: 'miles'
+            };
+            var circle = turf.circle(center, radius, options);
+            circleGeoJSON.push(circle);
+        });
 
-    var token = await waitForToken();
+        lngLats = [];
+        circleGeoJSON.forEach(function (currentGeoJSON) {
+            currentGeoJSON.geometry.coordinates[0].forEach(function (currentLngLat) {
+                lngLats.push({
+                    'lng': currentLngLat[0],
+                    'lat': currentLngLat[1],
+                });
+            })
+        });
+        console.log("TOTAL LAT/LNGS TO CHECK : " + lngLats.length);
+    }
 
-    console.log("TOKEN RECEIVED   : " + token);
+    var tokenValid = await isTokenValid();
+    if (!tokenValid) {
+        console.log("TOKEN INVALID, REFRESHING...");
+        var response = await performRequest(requestOptions.loginOptions(process.env.EMAIL, deviceId));
+        console.log("USER ID: " + response.id);
+        console.log("Waiting for email ...");
 
-    console.log("Verifying token  ...");
-    var auth = await performRequest(getVerifyOptions(token));
-    var authToken = auth.token;
-    console.log("AUTH TOKEN: " + authToken);
+        var loginToken = await waitForLoginToken();
 
-    circleGeoJSON = [];
+        console.log("TOKEN RECEIVED   : " + loginToken);
 
-    parkingLocs.forEach(function (currentLoc) {
-        var center = [currentLoc.lng, currentLoc.lat];
-        var radius = bikeSearchRadiusMiles;
-        var options = {
-            steps: 6,
-            units: 'miles'
-        };
-        var circle = turf.circle(center, radius, options);
-        circleGeoJSON.push(circle);
-    });
+        console.log("Verifying token  ...");
+        var auth = await performRequest(requestOptions.verifyOptions(loginToken, deviceId));
+        authToken = auth.token;
+        console.log("AUTH TOKEN: " + authToken);
+    }
 
-    lngLats = [];
-    circleGeoJSON.forEach(function (currentGeoJSON) {
-        currentGeoJSON.geometry.coordinates[0].forEach(function (currentLngLat) {
-            lngLats.push({
-                'lng': currentLngLat[0],
-                'lat': currentLngLat[1],
-            });
-        })
-    });
-
-    console.log("TOTAL LAT/LNGS TO CHECK : " + lngLats.length);
     var reqs = [];
     lngLats.forEach(function (currentLoc) {
-        reqs.push(limit(() => performRequest(getScooterOptions(currentLoc.lat, currentLoc.lng, 10000, authToken))));
+        reqs.push(limit(() => performRequest(requestOptions.scooterOptions(currentLoc.lat, currentLoc.lng, 10000, authToken, deviceId))));
     });
 
+    console.log("LOADING FOR BIRDS");
     responses = await Promise.all(reqs);
     uniqueBirds = [];
     responses.forEach(function (response) {
@@ -99,20 +103,14 @@ async function reloadScooters() {
                     uniqueBirds.push(currentBird);
                 }
             });
-        } else {
-            undefinedBirds++;
         }
     });
 
-    var result = perfy.end('bird_reqs');
+    requestsOnToken++;
     console.log("UNIQUE BIRDS : " + uniqueBirds.length);
-    console.log("SCRIPT TIME  : " + result.time + " sec.");
     var dbBirds = await sql.select.regularSelect('bike_locs', '*', ['company'], ['='], ['Bird']);
 
     var results = compareBirds(uniqueBirds, dbBirds[0]);
-    console.log("# ADDED: " + results.idsToAdd.length);
-    console.log("# UPDATED: " + results.idsToUpdate.length);
-    console.log("# REMOVED: " + results.idsToRemove.length);
 
     var toRemoveQueries = "";
     results.idsToRemove.forEach(function (current) {
@@ -134,9 +132,8 @@ async function reloadScooters() {
     var updatePromise = sql.runRaw(toUpdateQueries);
 
     await Promise.all([removePromise, addPromise, updatePromise]);
+    console.log(`SUCCESSFULLY ADDED: ${results.idsToAdd.length}, UPDATED: ${results.idsToUpdate.length}, REMOVED: ${results.idsToRemove.length}`);
     await sleep(5000);
-    console.log("DONE!");
-    process.exit();
 }
 
 function compareBirds(localBirds, dbBirds) {
@@ -194,50 +191,6 @@ async function performRequest(requestOptions) {
     });
 }
 
-function getScooterOptions(lat, lng, radius, authToken) {
-    var location = {
-        "latitude": lat,
-        "longitude": lng,
-        "altitude": 500,
-        "accuracy": 100,
-        "speed": -1,
-        "heading": -1
-    }
-    return options = {
-        method: 'GET',
-        url: 'https://api.bird.co/bird/nearby',
-        qs: {
-            latitude: lat,
-            longitude: lng,
-            radius: radius
-        },
-        headers: {
-            location: JSON.stringify(location),
-            'app-version': '3.0.5',
-            'device-id': deviceId,
-            authorization: 'Bird ' + authToken
-        },
-        json: true
-    };
-}
-
-function getVerifyOptions(token) {
-    return verifyOptions = {
-        method: 'PUT',
-        url: 'https://api.bird.co/request/accept',
-        headers: {
-            'app-version': '3.0.5',
-            'platform': 'ios',
-            'device-id': deviceId,
-            'content-type': 'application/json'
-        },
-        body: {
-            token: token
-        },
-        json: true
-    };
-}
-
 var app = express();
 app.use(bodyParser.json())
 
@@ -248,17 +201,17 @@ app.post("/", function (req, res) {
     var endString = '</div>';
     var endIndex = emailHtml.indexOf(endString, begIndex);
     currToken = emailHtml.substring(begIndex + begString.length, endIndex).trim();
-    token = currToken;
+    loginToken = currToken;
     res.status(200).send("OK");
 });
 
 app.listen(3000, () => console.log("Listening for email response on PORT 3000"));
 
-async function waitForToken() {
+async function waitForLoginToken() {
     return new Promise(function (resolve, reject) {
         waitUntil(function () {
-                if (token != undefined) {
-                    return token;
+                if (loginToken != undefined) {
+                    return loginToken;
                 } else {
                     return false;
                 }
@@ -270,4 +223,21 @@ async function waitForToken() {
                 reject(error);
             });
     });
+}
+
+async function isTokenValid() {
+    if (authToken == undefined || requestsOnToken >= 120) {
+        authToken = undefined;
+        requestsOnToken = 0;
+        return false;
+    } else {
+        var userInfo = await performRequest(requestOptions.userOptions(authToken, deviceId));
+        if (typeof userInfo != "undefined" && typeof userInfo.id != 'undefined' && userInfo.id.length > 5) {
+            return true;
+        } else {
+            authToken = undefined;
+            requestsOnToken = 0;
+            return false;
+        }
+    }
 }
