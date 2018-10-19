@@ -162,9 +162,9 @@ function compareBirds(localBirds, dbBirds) {
                 if (!haversine(currentBirdLoc, similarBirdLoc, {
                         threshold: 2,
                         unit: 'meter'
-                    })) {
+                    }) || similarBird[0].battery_level != currentBird.battery_level) {
                     idsToUpdate.push(currentBird);
-                    console.log('passed threshold');
+                    console.log('passed threshold or battery level different:' + similarBird[0].battery_level != currentBird.battery_level);
                     console.log(currentBirdLoc);
                     console.log(similarBirdLoc);
                 }
