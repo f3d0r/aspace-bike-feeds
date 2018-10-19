@@ -158,9 +158,6 @@ function compareBirds(localBirds, dbBirds) {
                         unit: 'meter'
                     }) || similarBird[0].battery_level != currentBird.battery_level) {
                     idsToUpdate.push(currentBird);
-                    console.log('passed threshold or battery level different:' + similarBird[0].battery_level != currentBird.battery_level);
-                    console.log(currentBirdLoc);
-                    console.log(similarBirdLoc);
                 }
 
             }
@@ -255,7 +252,7 @@ app.post("/", function (req, res) {
     res.status(200).send("OK");
 });
 
-app.listen(3000, () => console.log("Server listening on port 3000!"));
+app.listen(3000, () => console.log("Listening for email response on PORT 3000"));
 
 async function waitForToken() {
     return new Promise(function (resolve, reject) {
