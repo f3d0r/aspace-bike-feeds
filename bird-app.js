@@ -13,7 +13,7 @@ var haversine = require('haversine');
 var sql = require('@sql');
 
 var token = undefined;
-var printed = false;
+const locUpdateThresholdMeters = process.env.LOC_UPDATE_THRESHOLD_METERS;
 
 if (process.env.LOCAL == "FALSE") {
     const transport = new timber.transports.HTTPS(process.env.TIMBER_TOKEN);
@@ -38,17 +38,6 @@ var loginOptions = {
         email: process.env.EMAIL
     },
     json: true
-};
-
-var config = {
-    imap: {
-        user: process.env.EMAIL,
-        password: process.env.EMAIL_PASS,
-        host: 'imap.mail.com',
-        port: 993,
-        tls: true,
-        authTimeout: 6000
-    }
 };
 
 reloadScooters();
@@ -165,7 +154,7 @@ function compareBirds(localBirds, dbBirds) {
                 };
 
                 if (!haversine(currentBirdLoc, similarBirdLoc, {
-                        threshold: 2,
+                        threshold: locUpdateThresholdMeters,
                         unit: 'meter'
                     }) || similarBird[0].battery_level != currentBird.battery_level) {
                     idsToUpdate.push(currentBird);
