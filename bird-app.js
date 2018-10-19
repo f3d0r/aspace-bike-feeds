@@ -91,7 +91,7 @@ async function reloadScooters() {
         })
     });
 
-    console.log(lngLats.length);
+    console.log("TOTAL LAT/LNGS TO CHECK : " + lngLats.length);
     var reqs = []
     lngLats.forEach(function (currentLoc) {
         reqs.push(limit(() => performRequest(getScooterOptions(currentLoc.lat, currentLoc.lng, 10000, authToken))));
@@ -99,23 +99,75 @@ async function reloadScooters() {
 
     perfy.start('bird_reqs');
     responses = await Promise.all(reqs);
-    var total = 0;
     uniqueBirds = [];
     responses.forEach(function (response) {
         response.birds.forEach(function (currentBird) {
-            if (currentBird != {} && currentBird != [] && typeof currentBird != 'undefined') {
-                uniqueBirds.push(currentBird.id);
+            if (currentBird != {} && currentBird != [] && !uniqueBirds.some(item => item.id == currentBird.id)) {
+                uniqueBirds.push(currentBird);
             }
         });
     });
     var result = perfy.end('bird_reqs');
-    console.log("UNIQUE BIRDS : " + countUnique(uniqueBirds));
+    console.log("UNIQUE BIRDS : " + uniqueBirds.length);
     console.log("SCRIPT TIME  : " + result.time + " sec.");
+    console.log(JSON.stringify(uniqueBirds[0]));
+    var dbBirds = await sql.select.regularSelect('bike_locs', '*', ['company'], ['='], ['Bird']);
+
+    var results = compareBirds(uniqueBirds, dbBirds[0]);
+    console.log("# ADDED: " + results.idsToAdd.length);
+    console.log("# UPDATED: " + results.idsToUpdate.length);
+    console.log("# REMOVED: " + results.idsToRemove.length);
+
+    var toRemoveQueries = "";
+    results.idsToRemove.forEach(function (current) {
+        toRemoveQueries += `DELETE FROM \`bike_locs\` WHERE \`id\` = '${current.id}';`;
+    });
+    var removePromise = sql.runRaw(toRemoveQueries);
+
+    formattedObjects = [];
+    results.idsToAdd.forEach(function (current) {
+        formattedObjects.push(['Bird', 'USA', current.id, 1, 'Scooter', current.location.latitude, current.location.longitude, current.battery_level]);
+    })
+    var addPromise = sql.addObjects('bike_locs', ['company', 'region', 'id', 'bikes_available', 'type', 'lat', 'lng', 'battery_level'], formattedObjects);
+
+    toUpdateQueries = "";
+    results.idsToUpdate.forEach(function (current) {
+        toUpdateQueries += `UPDATE \`bikes_locs\` SET \`lat\`='${current.location.latitude}', \`lng\`='${current.location.longitude}'\`, \`battery_level\`='${current.battery_level}' WHERE \`id\`='${current.id}'; `
+    });
+
+
+    var updatePromise = sql.runRaw(toUpdateQueries);
+
+    await Promise.all([removePromise, addPromise, updatePromise]);
+    console.log("DONE!");
+    await sleep(5000);
     process.exit();
 }
 
-function countUnique(iterable) {
-    return new Set(iterable).size;
+function compareBirds(localBirds, dbBirds) {
+    idsToUpdate = [];
+
+    localBirds.forEach(function (currentBird) {
+        if (dbBirds.some(item => item.id == currentBird.id)) {
+            var similarBird = dbBirds.filter(bird => bird.id == currentBird.id);
+            if (similarBird[0].lat != currentBird.location.latitude || similarBird[0].lng != currentBird.location.longitude || similarBird[0].battery != currentBird.battery_level) {
+                idsToUpdate.push(currentBird);
+            }
+        }
+    });
+
+    var idsToAdd = localBirds.filter(function (currentBird) {
+        return !dbBirds.some(bird => bird.id == currentBird.id)
+    });
+    var idsToRemove = dbBirds.filter(function (currentBird) {
+        return !localBirds.some(bird => bird.id == currentBird.id)
+    });
+
+    return {
+        idsToUpdate,
+        idsToAdd,
+        idsToRemove
+    }
 }
 
 async function getEmailVerifyCode() {

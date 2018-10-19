@@ -5,23 +5,25 @@ module.exports = {
             var connections = await db.getConnections();
             return new Promise(function (resolveAll, rejectAll) {
                 var reqs = []
-                connections.forEach(function (connection) {
-                    reqs.push(new Promise(function (resolve, reject) {
-                        var sql = 'INSERT INTO ' + connection.escapeId(database) + ' (`' + keys[0] + '`';
-                        for (index = 1; index < keys.length; index++) {
-                            sql += ', `' + keys[index] + '` '
-                        }
-                        sql += ') VALUES ?';
-                        connection.query(sql, [objects], function (error, results, fields) {
-                            connection.release();
-                            if (error) {
-                                reject(error);
-                            } else {
-                                resolve(results);
+                if (typeof objects != 'undefined' && objects.length > 0) {
+                    connections.forEach(function (connection) {
+                        reqs.push(new Promise(function (resolve, reject) {
+                            var sql = 'INSERT INTO ' + connection.escapeId(database) + ' (`' + keys[0] + '`';
+                            for (index = 1; index < keys.length; index++) {
+                                sql += ', `' + keys[index] + '` '
                             }
-                        });
-                    }));
-                });
+                            sql += ') VALUES ?';
+                            connection.query(sql, [objects], function (error, results, fields) {
+                                connection.release();
+                                if (error) {
+                                    reject(error);
+                                } else {
+                                    resolve(results);
+                                }
+                            });
+                        }));
+                    });
+                }
                 Promise.all(reqs)
                     .then(function (responses) {
                         resolveAll(responses);
@@ -83,6 +85,7 @@ module.exports = {
             regularDelete: async function (database, keys, values) {
                 var connections = await db.getConnections();
                 return new Promise(function (resolveAll, rejectAll) {
+                    var reqs = [];
                     connections.forEach(function (connection) {
                         var sql = "DELETE FROM " + connection.escapeId(database) + " WHERE ";
                         if (keys.length != values.length)
@@ -92,7 +95,6 @@ module.exports = {
                                 sql += "`" + keys[index] + "` = ? AND ";
                             else
                                 sql += "`" + keys[index] + "` = ?";
-                        var reqs = [];
                         reqs.push(new Promise(function (resolve, reject) {
                             connection.query(sql, values, function (error, rows) {
                                 connection.release();
@@ -113,5 +115,32 @@ module.exports = {
                         });
                 });
             }
+        },
+        runRaw: async function (sql) {
+            var connections = await db.getConnections();
+            return new Promise(function (resolveAll, rejectAll) {
+                var reqs = [];
+                if (sql != "" && typeof sql != 'undefined') {
+                    connections.forEach(function (connection) {
+                        reqs.push(new Promise(function (resolve, reject) {
+                            connection.query(sql, function (error, rows) {
+                                connection.release();
+                                if (error)
+                                    reject(error);
+                                else {
+                                    resolve(rows);
+                                }
+                            });
+                        }));
+                    });
+                }
+                Promise.all(reqs)
+                    .then(function (response) {
+                        resolveAll(response);
+                    }).catch(function (error) {
+                        rejectAll(error);
+                    })
+            });
         }
+
 }
