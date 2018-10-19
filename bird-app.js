@@ -132,7 +132,7 @@ async function reloadScooters() {
 
     toUpdateQueries = "";
     results.idsToUpdate.forEach(function (current) {
-        toUpdateQueries += `UPDATE \`bikes_locs\` SET \`lat\`='${current.location.latitude}', \`lng\`='${current.location.longitude}', \`battery_level\`='${current.battery_level}' WHERE \`id\`='${current.id}'; `
+        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.location.latitude}', \`lng\`='${current.location.longitude}', \`battery_level\`='${current.battery_level}' WHERE \`id\`='${current.id}'; `
     });
 
     var updatePromise = sql.runRaw(toUpdateQueries);
