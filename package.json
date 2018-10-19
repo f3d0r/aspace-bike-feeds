@@ -10,38 +10,23 @@
     "license": "MIT",
     "_moduleAliases": {
         "@root": ".",
-        "@limebike": "misc/limebike",
         "@config": "config",
-        "@sql": "database/sqlActions",
-        "@gbfs-feeds": "config/gbfs",
-        "@gbfs": "misc/gbfsAnalyze",
-        "@file-conversion": "misc/fileConversion",
-        "@skip": "misc/skipScooters",
-        "@spin": "misc/spinBikes",
-        "@jump": "misc/jumpBikes"
+        "@sql": "database/sqlActions"
     },
     "_moduleDirectories": [
         "node_modules"
     ],
     "dependencies": {
         "@turf/turf": "^5.1.6",
-        "app-root-path": "^2.1.0",
         "async-wait-until": "^1.2.4",
-        "cloudscraper": "^1.5.0",
         "csvtojson": "^2.0.8",
         "express": "^4.16.4",
         "haversine": "^1.1.0",
-        "imap-simple": "^4.1.0",
-        "localtunnel": "^1.9.1",
         "module-alias": "^2.1.0",
         "mysql": "^2.16.0",
         "p-limit": "^2.0.0",
         "perfy": "^1.1.5",
-        "promise-limit": "^2.7.0",
-        "recursive-readdir": "^2.2.2",
         "request": "^2.88.0",
-        "sleep-promise": "^8.0.1",
-        "timber": "^3.1.3",
-        "winston": "^3.1.0"
+        "timber": "^3.1.3"
     }
 }

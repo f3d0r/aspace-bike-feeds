@@ -1,6 +1,5 @@
 require('module-alias/register');
 var request = require('request');
-var sleep = require('sleep-promise');
 var turf = require('@turf/turf');
 var pLimit = require('p-limit');
 var perfy = require('perfy');
@@ -120,7 +119,7 @@ async function reloadScooters() {
 
     formattedObjects = [];
     results.idsToAdd.forEach(function (current) {
-        formattedObjects.push(['Bird', 'USA', current.id, 1, 'Scooter', current.location.latitude, current.location.longitude, current.battery_level]);
+        formattedObjects.push(['Bird', 'US', current.id, 1, 'Scooter', current.location.latitude, current.location.longitude, current.battery_level]);
     })
     var addPromise = sql.addObjects('bike_locs', ['company', 'region', 'id', 'bikes_available', 'type', 'lat', 'lng', 'battery_level'], formattedObjects);
 
