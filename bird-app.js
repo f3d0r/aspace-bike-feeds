@@ -1,5 +1,4 @@
 require('module-alias/register');
-var imaps = require('imap-simple');
 var request = require('request');
 var sleep = require('sleep-promise');
 var turf = require('@turf/turf');
@@ -9,7 +8,7 @@ var timber = require('timber');
 var express = require("express");
 var bodyParser = require('body-parser');
 var waitUntil = require('async-wait-until');
-var haversine = require('haversine')
+var haversine = require('haversine');
 
 var sql = require('@sql');
 
@@ -24,7 +23,6 @@ if (process.env.LOCAL == "FALSE") {
 const limit = pLimit(process.env.CONCURRENT_REQUESTS);
 
 const deviceId = process.env.DEVICE_ID;
-const emailWaitSecs = process.env.EMAIL_WAIT_SECS;
 const bikeSearchRadiusMiles = process.env.BIKE_SEARCH_RADIUS_MILES;
 
 var loginOptions = {
@@ -98,7 +96,7 @@ async function reloadScooters() {
     });
 
     console.log("TOTAL LAT/LNGS TO CHECK : " + lngLats.length);
-    var reqs = []
+    var reqs = [];
     lngLats.forEach(function (currentLoc) {
         reqs.push(limit(() => performRequest(getScooterOptions(currentLoc.lat, currentLoc.lng, 10000, authToken))));
     });
@@ -154,19 +152,23 @@ function compareBirds(localBirds, dbBirds) {
         if (dbBirds.some(item => item.id == currentBird.id)) {
             var similarBird = dbBirds.filter(bird => bird.id == currentBird.id);
             if (similarBird[0].lat != currentBird.location.latitude || similarBird[0].lng != currentBird.location.longitude || similarBird[0].battery_level != currentBird.battery_level) {
-                if (!printed) {
-                    console.log("SIMILAR BIRD LAT: " + similarBird[0].lat);
-                    console.log("SIMILAR BIRD LNG: " + similarBird[0].lng);
-                    console.log("SIMILAR BIRD BATTERY: " + similarBird[0].battery_level);
-                    console.log("CURRENT BIRD LAT: " + currentBird.location.latitude);
-                    console.log("CURRENT BIRD LNG: " + currentBird.location.longitude);
-                    console.log("CURRENT BIRD BATTERY: " + currentBird.battery_level);
-                    console.log("LATS EQUAL: " + similarBird[0].lat == currentBird.location.latitude);
-                    console.log("LNGS EQUAL: " + similarBird[0].lng == currentBird.location.longitude);
-                    console.log("BATTERIES EQUAL: " + similarBird[0].battery_level == currentBird.location.battery_level);
-                    printed = true;
+                const currentBirdLoc = currentBird.location;
+
+                const similarBirdLoc = {
+                    'latitude': similarBird[0].lat,
+                    'longitude': similarBird[0].lng
+                };
+
+                if (!haversine(currentBirdLoc, similarBirdLoc, {
+                        threshold: 2,
+                        unit: 'meter'
+                    })) {
+                    idsToUpdate.push(currentBird);
+                    console.log('passed threshold');
+                    console.log(currentBirdLoc);
+                    console.log(similarBirdLoc);
                 }
-                idsToUpdate.push(currentBird);
+
             }
         }
     });
@@ -262,19 +264,19 @@ app.post("/", function (req, res) {
 app.listen(3000, () => console.log("Server listening on port 3000!"));
 
 async function waitForToken() {
-    return new Promise(function(resolve, reject) {
-        waitUntil(function() {
-            if (token != undefined) {
-                return token;
-            } else {
-                return false;
-            }
-          }, 15000)
-          .then((result) => {
-            resolve(result);
-          })
-          .catch((error) => {
-            reject(error);
-          });
+    return new Promise(function (resolve, reject) {
+        waitUntil(function () {
+                if (token != undefined) {
+                    return token;
+                } else {
+                    return false;
+                }
+            }, 15000)
+            .then((result) => {
+                resolve(result);
+            })
+            .catch((error) => {
+                reject(error);
+            });
     });
 }
