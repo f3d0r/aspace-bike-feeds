@@ -60,6 +60,18 @@ async function reloadSkip() {
     console.log("HERE5");
     var updatePromise = sql.runRaw(toUpdateQueries);
     console.log("HERE6");
+
+    var finalReqs = [];
+
+    if (results.idsToAdd.length > 0) {
+        finalReqs.push(addPromise);
+    }
+    if (results.idsToRemove.length > 0) {
+        finalReqs.push(removePromise);
+    }
+    if (results.idsToUpdate.length > 0) {
+        finalReqs.push(updatePromise);
+    }
     // updatePromise = updatePromise == undefined ? Promise.resolve() : updatePromise;
     // addPromise = addPromise == undefined ? Promise.resolve() : addPromise;
     // removePromise = removePromise == undefined ? Promise.resolve() : removePromise;
@@ -68,7 +80,7 @@ async function reloadSkip() {
     console.log("TO REMOVE: " + removePromise);
     console.log("TO UPDATE: " + updatePromise);
     console.log("TO ADD: " + addPromise);
-    await Promise.all([removePromise, addPromise, updatePromise]);
+    await Promise.all(finalReqs);
     console.log(`SKIP SCOOTERS || SUCCESS: ADDED: ${results.idsToAdd.length}, UPDATED: ${results.idsToUpdate.length}, REMOVED: ${results.idsToRemove.length}`);
 }
 
