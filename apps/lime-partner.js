@@ -5,6 +5,7 @@ var timber = require('timber');
 var haversine = require('haversine');
 
 var sql = require('@sql');
+var misc = require('@misc');
 var requestOptions = require('../request-config/lime-partner');
 
 const locUpdateThresholdMeters = process.env.LOC_UPDATE_THRESHOLD_METERS;
@@ -20,7 +21,7 @@ async function execute() {
         perfy.start('lime_partner_reqs');
         await reloadLime();
         var resultTime = perfy.end('lime_partner_reqs');
-        await sleep(30000 - resultTime.fullMilliseconds);
+        await misc.sleep(30000 - resultTime.fullMilliseconds);
     }
 }
 execute();
@@ -28,7 +29,7 @@ execute();
 async function reloadLime() {
     var reqs = [];
     partnerCities.forEach(function(currentRegion) {
-        reqs.push(performRequest(requestOptions.getBikes(currentRegion)));
+        reqs.push(misc.performRequest(requestOptions.getBikes(currentRegion)));
     });
 
     console.log("LIME PARTNERS || LOADING BIKES");
@@ -106,24 +107,4 @@ function compareLime(localLime, dbLime) {
         idsToAdd,
         idsToRemove
     }
-}
-
-function sleep(ms) {
-    if (ms > 0) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    } else {
-        return Promise.resolve()
-    }
-}
-
-async function performRequest(requestOptions) {
-    return new Promise(function (resolve, reject) {
-        request(requestOptions, function (error, response, body) {
-            if (error) {
-                reject(error);
-            } else {
-                resolve(body);
-            }
-        });
-    });
 }

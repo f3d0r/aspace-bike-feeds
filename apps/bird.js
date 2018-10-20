@@ -1,5 +1,4 @@
 require('module-alias/register');
-var request = require('request');
 var turf = require('@turf/turf');
 var pLimit = require('p-limit');
 var perfy = require('perfy');
@@ -10,6 +9,7 @@ var waitUntil = require('async-wait-until');
 var haversine = require('haversine');
 
 var sql = require('@sql');
+var misc = require('@misc');
 var requestOptions = require('../request-config/bird');
 
 const locUpdateThresholdMeters = process.env.LOC_UPDATE_THRESHOLD_METERS;
@@ -34,7 +34,7 @@ async function execute() {
         perfy.start('bird_reqs');
         await reloadScooters();
         var resultTime = perfy.end('bird_reqs');
-        await sleep(45000 - resultTime.fullMilliseconds);
+        await misc.sleep(45000 - resultTime.fullMilliseconds);
     }
 }
 execute();
@@ -73,7 +73,7 @@ async function reloadScooters() {
     var tokenValid = await isTokenValid();
     if (!tokenValid) {
         console.log("BIRD SCOOTERS || TOKEN INVALID, REFRESHING...");
-        var response = await performRequest(requestOptions.loginOptions(process.env.EMAIL, deviceId));
+        var response = await misc.performRequest(requestOptions.loginOptions(process.env.EMAIL, deviceId));
         console.log("BIRD SCOOTERS || USER ID = " + response.id);
         console.log("BIRD SCOOTERS || WAITING FOR EMAIL...");
 
@@ -82,14 +82,14 @@ async function reloadScooters() {
         console.log("BIRD SCOOTERS || TOKEN RECEIVED = " + loginToken);
 
         console.log("BIRD SCOOTERS || VERIFYING TOKEN...");
-        var auth = await performRequest(requestOptions.verifyOptions(loginToken, deviceId));
+        var auth = await misc.performRequest(requestOptions.verifyOptions(loginToken, deviceId));
         authToken = auth.token;
         console.log("BIRD SCOOTERS || AUTH TOKEN = " + authToken);
     }
 
     var reqs = [];
     lngLats.forEach(function (currentLoc) {
-        reqs.push(limit(() => performRequest(requestOptions.scooterOptions(currentLoc.lat, currentLoc.lng, 10000, authToken, deviceId))));
+        reqs.push(limit(() => misc.performRequest(requestOptions.scooterOptions(currentLoc.lat, currentLoc.lng, 10000, authToken, deviceId))));
     });
 
     console.log("BIRD SCOOTERS || LOADING SCOOTERS");
@@ -173,26 +173,6 @@ function compareBirds(localBirds, dbBirds) {
     }
 }
 
-function sleep(ms) {
-    if (ms > 0) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    } else {
-        return Promise.resolve()
-    }
-}
-
-async function performRequest(requestOptions) {
-    return new Promise(function (resolve, reject) {
-        request(requestOptions, function (error, response, body) {
-            if (error) {
-                reject(error);
-            } else {
-                resolve(body);
-            }
-        });
-    });
-}
-
 var app = express();
 app.use(bodyParser.json())
 
@@ -235,7 +215,7 @@ async function isTokenValid() {
         requestsOnToken = 0;
         return false;
     } else {
-        var userInfo = await performRequest(requestOptions.userOptions(authToken, deviceId));
+        var userInfo = await misc.performRequest(requestOptions.userOptions(authToken, deviceId));
         if (typeof userInfo != "undefined" && typeof userInfo.id != 'undefined' && userInfo.id.length > 5) {
             return true;
         } else {

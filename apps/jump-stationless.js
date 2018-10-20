@@ -1,10 +1,10 @@
 require('module-alias/register');
-var request = require('request');
 var perfy = require('perfy');
 var timber = require('timber');
 var haversine = require('haversine');
 
 var sql = require('@sql');
+var misc = require('@misc');
 var requestOptions = require('../request-config/jump-stationless');
 
 const locUpdateThresholdMeters = process.env.LOC_UPDATE_THRESHOLD_METERS;
@@ -20,7 +20,7 @@ async function execute() {
         perfy.start('jump_stationless_reqs');
         await reloadJump();
         var resultTime = perfy.end('jump_stationless_reqs');
-        await sleep(30000 - resultTime.fullMilliseconds);
+        await misc.sleep(30000 - resultTime.fullMilliseconds);
     }
 }
 execute();
@@ -28,7 +28,7 @@ execute();
 async function reloadJump() {
     var reqs = [];
     cities.forEach(function (currentCity) {
-        reqs.push(performRequest(requestOptions.getBikes(currentCity)));
+        reqs.push(misc.performRequest(requestOptions.getBikes(currentCity)));
     })
 
     console.log("JUMP STATIONLESS || LOADING BIKES");
@@ -114,24 +114,4 @@ function compareJump(localJump, dbJump) {
         idsToAdd,
         idsToRemove
     }
-}
-
-function sleep(ms) {
-    if (ms > 0) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    } else {
-        return Promise.resolve()
-    }
-}
-
-async function performRequest(requestOptions) {
-    return new Promise(function (resolve, reject) {
-        request(requestOptions, function (error, response, body) {
-            if (error) {
-                reject(error);
-            } else {
-                resolve(body);
-            }
-        });
-    });
 }

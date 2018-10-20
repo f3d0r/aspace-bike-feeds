@@ -5,6 +5,7 @@ var timber = require('timber');
 var haversine = require('haversine');
 
 var sql = require('@sql');
+var misc = require('@misc');
 var requestOptions = require('../request-config/spin');
 
 const locUpdateThresholdMeters = process.env.LOC_UPDATE_THRESHOLD_METERS;
@@ -19,14 +20,14 @@ async function execute() {
         perfy.start('spin_reqs');
         await reloadSpin();
         var resultTime = perfy.end('spin_reqs');
-        await sleep(30000 - resultTime.fullMilliseconds);
+        await misc.sleep(30000 - resultTime.fullMilliseconds);
     }
 }
 execute();
 
 async function reloadSpin() {
     var reqs = [];
-    reqs.push(performRequest(requestOptions.getBikes()));
+    reqs.push(misc.performRequest(requestOptions.getBikes()));
 
     console.log("SPIN BIKES || LOADING BIKES");
     responses = await Promise.all(reqs);
@@ -106,24 +107,4 @@ function compareSpin(localSpin, dbSpin) {
         idsToAdd,
         idsToRemove
     }
-}
-
-function sleep(ms) {
-    if (ms > 0) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    } else {
-        return Promise.resolve()
-    }
-}
-
-async function performRequest(requestOptions) {
-    return new Promise(function (resolve, reject) {
-        request(requestOptions, function (error, response, body) {
-            if (error) {
-                reject(error);
-            } else {
-                resolve(body);
-            }
-        });
-    });
 }
