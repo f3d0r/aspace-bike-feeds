@@ -59,6 +59,11 @@ async function reloadSkip() {
     });
 
     var updatePromise = sql.runRaw(toUpdateQueries);
+    
+    updatePromise = updatePromise == undefined ? Promise.resolve() : updatePromise;
+    addPromise = addPromise == undefined ? Promise.resolve() : addPromise;
+    removePromise = removePromise == undefined ? Promise.resolve() : removePromise;
+
     console.log("TO RUN PROMISES");
     console.log("TO REMOVE: " + removePromise.length);
     console.log("TO UPDATE: " + updatePromise.length);
