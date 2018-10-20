@@ -106,7 +106,7 @@ async function reloadScooters() {
     });
 
     requestsOnToken++;
-    console.log("BIRD SCOOTERS || " + uniqueBirds.length);
+    console.log("BIRD SCOOTERS || RECEIVED " + uniqueBirds.length + " SCOOTERS");
     var dbBirds = await sql.select.regularSelect('bike_locs', '*', ['company'], ['='], ['Bird']);
 
     var results = compareBirds(uniqueBirds, dbBirds[0]);
