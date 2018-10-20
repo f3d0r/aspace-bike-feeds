@@ -60,6 +60,9 @@ async function reloadSkip() {
 
     var updatePromise = sql.runRaw(toUpdateQueries);
     console.log("TO RUN PROMISES");
+    console.log("TO REMOVE: " + removePromise.length);
+    console.log("TO UPDATE: " + updatePromise.length);
+    console.log("TO ADD: " + formattedObjects.length);
     await Promise.all([removePromise, addPromise, updatePromise]);
     console.log(`SKIP SCOOTERS || SUCCESS: ADDED: ${results.idsToAdd.length}, UPDATED: ${results.idsToUpdate.length}, REMOVED: ${results.idsToRemove.length}`);
 }
