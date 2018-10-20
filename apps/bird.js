@@ -10,7 +10,7 @@ var waitUntil = require('async-wait-until');
 var haversine = require('haversine');
 
 var sql = require('@sql');
-var requestOptions = require('./bird');
+var requestOptions = require('../request-config/bird');
 
 const locUpdateThresholdMeters = process.env.LOC_UPDATE_THRESHOLD_METERS;
 const limit = pLimit(process.env.CONCURRENT_REQUESTS);
