@@ -84,7 +84,7 @@ async function reloadScooters() {
         console.log("BIRD SCOOTERS || VERIFYING TOKEN...");
         var auth = await misc.performRequest(requestOptions.verifyOptions(loginToken, deviceId));
         authToken = auth.token;
-        console.log("BIRD SCOOTERS || AUTH TOKEN VALID? " + authToken.length >= 150);
+        console.log("BIRD SCOOTERS || AUTH TOKEN VALID? " + (authToken.length >= 150));
     }
 
     var reqs = [];
