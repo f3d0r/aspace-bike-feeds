@@ -35,7 +35,7 @@ async function reloadSkip() {
     responses.forEach(function (currentResponse) {
         localSkips = localSkips.concat(currentResponse.bikes);
     });
-    console.log("SKIP SCOOTERS || RECEIVED " + localSkips.length + " BIKES");
+    console.log("SKIP SCOOTERS || RECEIVED " + localSkips.length + " SCOOTERS");
 
     var dbSkips = await sql.select.regularSelect('bike_locs', '*', ['company'], ['='], ['Skip']);
 

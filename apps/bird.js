@@ -43,9 +43,9 @@ async function reloadScooters() {
     if (requestsOnToken >= 30 || parkingLocs == undefined || circleGeoJSON == undefined || circleGeoJSON == []) {
         parkingLocs = await (sql.select.regularSelect('parkopedia_parking', '*', ['id'], ['>'], ['0'], null));
         parkingLocs = parkingLocs[0];
-        console.log("REFRESHED PARKING SPOTS : " + parkingLocs.length);
+        console.log("BIRD SCOOTERS || REFRESHED PARKING SPOTS");
 
-        console.log("CALCULATING PARKING LOC LAT/LNGS")
+        console.log("BIRD SCOOTERS || CALCULATING PARKING LOC LAT/LNGS")
         circleGeoJSON = [];
         parkingLocs.forEach(function (currentLoc) {
             var center = [currentLoc.lng, currentLoc.lat];
@@ -67,24 +67,24 @@ async function reloadScooters() {
                 });
             })
         });
-        console.log("TOTAL LAT/LNGS TO CHECK : " + lngLats.length);
+        console.log("BIRD SCOOTERS || TOTAL LAT/LNGS TO CHECK = " + lngLats.length);
     }
 
     var tokenValid = await isTokenValid();
     if (!tokenValid) {
-        console.log("TOKEN INVALID, REFRESHING...");
+        console.log("BIRD SCOOTERS || TOKEN INVALID, REFRESHING...");
         var response = await performRequest(requestOptions.loginOptions(process.env.EMAIL, deviceId));
-        console.log("USER ID: " + response.id);
-        console.log("Waiting for email ...");
+        console.log("BIRD SCOOTERS || USER ID = " + response.id);
+        console.log("BIRD SCOOTERS || WAITING FOR EMAIL...");
 
         var loginToken = await waitForLoginToken();
 
-        console.log("TOKEN RECEIVED   : " + loginToken);
+        console.log("BIRD SCOOTERS || TOKEN RECEIVED = " + loginToken);
 
-        console.log("Verifying token  ...");
+        console.log("BIRD SCOOTERS || VERIFYING TOKEN...");
         var auth = await performRequest(requestOptions.verifyOptions(loginToken, deviceId));
         authToken = auth.token;
-        console.log("AUTH TOKEN: " + authToken);
+        console.log("BIRD SCOOTERS || AUTH TOKEN = " + authToken);
     }
 
     var reqs = [];
@@ -92,7 +92,7 @@ async function reloadScooters() {
         reqs.push(limit(() => performRequest(requestOptions.scooterOptions(currentLoc.lat, currentLoc.lng, 10000, authToken, deviceId))));
     });
 
-    console.log("LOADING FOR BIRDS");
+    console.log("BIRD SCOOTERS || LOADING SCOOTERS");
     responses = await Promise.all(reqs);
     uniqueBirds = [];
     responses.forEach(function (response) {
@@ -106,7 +106,7 @@ async function reloadScooters() {
     });
 
     requestsOnToken++;
-    console.log("UNIQUE BIRDS : " + uniqueBirds.length);
+    console.log("BIRD SCOOTERS || " + uniqueBirds.length);
     var dbBirds = await sql.select.regularSelect('bike_locs', '*', ['company'], ['='], ['Bird']);
 
     var results = compareBirds(uniqueBirds, dbBirds[0]);
@@ -131,8 +131,7 @@ async function reloadScooters() {
     var updatePromise = sql.runRaw(toUpdateQueries);
 
     await Promise.all([removePromise, addPromise, updatePromise]);
-    console.log(`SUCCESSFULLY ADDED: ${results.idsToAdd.length}, UPDATED: ${results.idsToUpdate.length}, REMOVED: ${results.idsToRemove.length}`);
-    await sleep(5000);
+    console.log(`BIRD SCOOTERS || SUCCESS: ADDED: ${results.idsToAdd.length}, UPDATED: ${results.idsToUpdate.length}, REMOVED: ${results.idsToRemove.length}`);
 }
 
 function compareBirds(localBirds, dbBirds) {
@@ -204,7 +203,9 @@ app.post("/", function (req, res) {
     res.status(200).send("OK");
 });
 
-app.listen(3000, () => console.log("Listening for email response on PORT 3000"));
+app.listen(3000, function () {
+    console.log("BIRD SCOOTERS || LISTENING FOR EMAIL RESPONSE ON PORT 3000");
+});
 
 async function waitForLoginToken() {
     return new Promise(function (resolve, reject) {
