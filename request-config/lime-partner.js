@@ -9,6 +9,7 @@ module.exports = {
             headers: {
                 authorization: 'Bearer limebike-PMc3qGEtAAXqJa'
             },
+            timeout: 5000,
             json: true
         };
     }

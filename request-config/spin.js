@@ -6,6 +6,7 @@ module.exports = {
             headers: {
                 'user-agent': 'insomnia/6.0.2'
             },
+            timeout: 5000,
             json: true
         };
     }

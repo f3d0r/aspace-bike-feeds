@@ -12,6 +12,7 @@ module.exports = {
             body: {
                 email: email
             },
+            timeout: 5000,
             json: true
         }
     },
@@ -38,6 +39,7 @@ module.exports = {
                 'device-id': deviceId,
                 'authorization': 'Bird ' + authToken
             },
+            timeout: 5000,
             json: true
         };
     },
@@ -54,6 +56,7 @@ module.exports = {
             body: {
                 token: token
             },
+            timeout: 5000,
             json: true
         };
     },
@@ -67,6 +70,7 @@ module.exports = {
                 'device-id': deviceId,
                 'authorization': 'Bird ' + authToken
             },
+            timeout: 5000,
             json: true
         };
     }
