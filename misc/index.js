@@ -5,7 +5,7 @@ module.exports = {
         if (ms > 0) {
             return new Promise(resolve => setTimeout(resolve, ms));
         } else {
-            return new Promise(resolve => setTimeout(resolve, 2000));
+            return Promise.resolve();
         }
     },
     performRequest: function (requestOptions) {
