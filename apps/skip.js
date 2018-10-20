@@ -36,51 +36,30 @@ async function reloadSkip() {
         localSkips = localSkips.concat(currentResponse.bikes);
     });
     console.log("SKIP SCOOTERS || RECEIVED " + localSkips.length + " SCOOTERS");
-
-    var dbSkips = await sql.select.regularSelect('bike_locs', '*', ['company'], ['='], ['Skip']);
-    console.log("HERE1");
+    
+    var dbSkips = await sql.runRaw(`SELECT * FROM \`bike_locs\` WHERE \`COMPANY\` = 'SKIP'`, true);
     var results = compareSkip(localSkips, dbSkips[0]);
-    console.log("HERE2");
+    
     var toRemoveQueries = "";
     results.idsToRemove.forEach(function (current) {
         toRemoveQueries += `DELETE FROM \`bike_locs\` WHERE \`id\` = '${current.id}'; `;
     });
-    var removePromise = sql.runRaw(toRemoveQueries);
-    console.log("HERE3");
+    var removePromise = sql.runRaw(toRemoveQueries, false);
+    
     formattedObjects = [];
     results.idsToAdd.forEach(function (current) {
         formattedObjects.push(['Skip', 'US', current.bike_id, 1, "scooter", current.lat, current.lon]);
     });
     var addPromise = sql.addObjects('bike_locs', ['company', 'region', 'id', 'bikes_available', 'type', 'lat', 'lng'], formattedObjects);
-    console.log("HERE4");
+    
     toUpdateQueries = "";
     results.idsToUpdate.forEach(function (current) {
         toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.lat}', \`lng\`='${current.lon}' WHERE \`id\`='${current.id}'; `
     });
-    console.log("HERE5");
-    var updatePromise = sql.runRaw(toUpdateQueries);
-    console.log("HERE6");
 
-    var finalReqs = [];
+    var updatePromise = sql.runRaw(toUpdateQueries, false);
 
-    if (results.idsToAdd.length > 0) {
-        finalReqs.push(addPromise);
-    }
-    if (results.idsToRemove.length > 0) {
-        finalReqs.push(removePromise);
-    }
-    if (results.idsToUpdate.length > 0) {
-        finalReqs.push(updatePromise);
-    }
-    // updatePromise = updatePromise == undefined ? Promise.resolve() : updatePromise;
-    // addPromise = addPromise == undefined ? Promise.resolve() : addPromise;
-    // removePromise = removePromise == undefined ? Promise.resolve() : removePromise;
-    console.log("HERE 7");
-    console.log("TO RUN PROMISES");
-    console.log("TO REMOVE: " + removePromise);
-    console.log("TO UPDATE: " + updatePromise);
-    console.log("TO ADD: " + addPromise);
-    await Promise.all(finalReqs);
+    await Promise.all([removePromise, addPromise, updatePromise]);
     console.log(`SKIP SCOOTERS || SUCCESS: ADDED: ${results.idsToAdd.length}, UPDATED: ${results.idsToUpdate.length}, REMOVED: ${results.idsToRemove.length}`);
 }
 

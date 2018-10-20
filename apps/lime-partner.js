@@ -41,7 +41,7 @@ async function reloadLime() {
     });
     console.log("LIME PARTNERS || RECEIVED " + localLimes.length + " BIKES");
 
-    var dbLimes = await sql.select.regularSelect('bike_locs', '*', ['company'], ['='], ['Lime-Partner']);
+    var dbLimes = await sql.regularSelect('bike_locs', '*', ['company'], ['='], ['Lime-Partner']);
 
     var results = compareLime(localLimes, dbLimes[0]);
 

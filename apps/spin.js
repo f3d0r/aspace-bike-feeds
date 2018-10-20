@@ -41,7 +41,7 @@ async function reloadSpin() {
     });
     console.log("SPIN BIKES || RECEIVED " + localSpins.length + " BIKES");
 
-    var dbSpins = await sql.select.regularSelect('bike_locs', '*', ['company'], ['='], ['Spin']);
+    var dbSpins = await sql.regularSelect('bike_locs', '*', ['company'], ['='], ['Spin']);
 
     var results = compareSpin(localSpins, dbSpins[0]);
 

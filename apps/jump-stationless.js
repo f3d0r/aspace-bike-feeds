@@ -48,7 +48,7 @@ async function reloadJump() {
     });
     console.log("JUMP STATIONLESS || RECEIVED " + localJumps.length + " BIKES");
 
-    var dbJumps = await sql.select.regularSelect('bike_locs', '*', ['company'], ['='], ['Jump-Stationless']);
+    var dbJumps = await sql.regularSelect('bike_locs', '*', ['company'], ['='], ['Jump-Stationless']);
 
     var results = compareJump(localJumps, dbJumps[0]);
 

@@ -41,7 +41,7 @@ execute();
 
 async function reloadScooters() {
     if (requestsOnToken >= 30 || parkingLocs == undefined || circleGeoJSON == undefined || circleGeoJSON == []) {
-        parkingLocs = await (sql.select.regularSelect('parkopedia_parking', '*', ['id'], ['>'], ['0'], null));
+        parkingLocs = await (sql.regularSelect('parkopedia_parking', '*', ['id'], ['>'], ['0'], null));
         parkingLocs = parkingLocs[0];
         console.log("BIRD SCOOTERS || REFRESHED PARKING SPOTS");
 
@@ -107,7 +107,7 @@ async function reloadScooters() {
 
     requestsOnToken++;
     console.log("BIRD SCOOTERS || RECEIVED " + uniqueBirds.length + " SCOOTERS");
-    var dbBirds = await sql.select.regularSelect('bike_locs', '*', ['company'], ['='], ['Bird']);
+    var dbBirds = await sql.regularSelect('bike_locs', '*', ['company'], ['='], ['Bird']);
 
     var results = compareBirds(uniqueBirds, dbBirds[0]);
 
