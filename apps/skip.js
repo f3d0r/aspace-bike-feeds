@@ -65,9 +65,9 @@ async function reloadSkip() {
     // removePromise = removePromise == undefined ? Promise.resolve() : removePromise;
     console.log("HERE 7");
     console.log("TO RUN PROMISES");
-    console.log("TO REMOVE: " + removePromise.length);
-    console.log("TO UPDATE: " + updatePromise.length);
-    console.log("TO ADD: " + formattedObjects.length);
+    console.log("TO REMOVE: " + removePromise);
+    console.log("TO UPDATE: " + updatePromise);
+    console.log("TO ADD: " + addPromise);
     await Promise.all([removePromise, addPromise, updatePromise]);
     console.log(`SKIP SCOOTERS || SUCCESS: ADDED: ${results.idsToAdd.length}, UPDATED: ${results.idsToUpdate.length}, REMOVED: ${results.idsToRemove.length}`);
 }
