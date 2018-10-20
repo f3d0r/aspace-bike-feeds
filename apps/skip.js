@@ -19,7 +19,7 @@ async function execute() {
         perfy.start('skip_reqs');
         await reloadSkip();
         var resultTime = perfy.end('skip_reqs');
-        await sleep(Math.max(0, 30000 - resultTime.fullMilliseconds));
+        await sleep(30000 - resultTime.fullMilliseconds);
     }
 }
 execute();
@@ -106,7 +106,11 @@ function compareSkip(localSkip, dbSkip) {
 }
 
 function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    if (ms > 0) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    } else {
+        return Promise.resolve()
+    }
 }
 
 async function performRequest(requestOptions) {

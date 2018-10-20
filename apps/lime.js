@@ -17,8 +17,6 @@ const phoneNumber = 'twilio_origin_phone_number'
 var jar = request.jar();
 
 var currToken = undefined;
-var verifying = true;
-
 var latLngs = undefined;
 
 fs.readFile(path.join(rootPath.path, 'fullLatLngs.txt'), 'utf-8', function (err, data) {

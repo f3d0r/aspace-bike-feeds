@@ -20,14 +20,14 @@ async function execute() {
         perfy.start('jump_stationless_reqs');
         await reloadJump();
         var resultTime = perfy.end('jump_stationless_reqs');
-        await sleep(Math.max(0, 30000 - resultTime.fullMilliseconds));
+        await sleep(30000 - resultTime.fullMilliseconds);
     }
 }
 execute();
 
 async function reloadJump() {
     var reqs = [];
-    cities.forEach(function(currentCity) {
+    cities.forEach(function (currentCity) {
         reqs.push(performRequest(requestOptions.getBikes(currentCity)));
     })
 
@@ -117,7 +117,11 @@ function compareJump(localJump, dbJump) {
 }
 
 function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    if (ms > 0) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    } else {
+        return Promise.resolve()
+    }
 }
 
 async function performRequest(requestOptions) {
