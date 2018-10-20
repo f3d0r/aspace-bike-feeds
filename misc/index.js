@@ -10,6 +10,7 @@ module.exports = {
     },
     performRequest: function (requestOptions) {
         return new Promise(function (resolve, reject) {
+            requestOptions.headers['User-Agent'] = "insomnia/6.0.2";
             request(requestOptions, function (error, response, body) {
                 if (error) {
                     reject(error);
