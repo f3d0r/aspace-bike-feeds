@@ -33,23 +33,31 @@ async function reloadNextbike() {
 
     localStations = [];
     responses.forEach(function (currentResponse) {
-        currentResponse.countries.forEach(function (currentCountry) {
-            var region = currentCountry.country;
-            currentCountry.cities.forEach(function (currentCity) {
-                currentCity.places.forEach(function (currentPlace) {
-                    if (!currentPlace.maintenance) {
-                        localStations.push({
-                            "id": currentPlace.uid,
-                            "company": "Nextbike",
-                            "region": region,
-                            "bikes_available": currentPlace.bikes,
-                            "lat": currentPlace.lat,
-                            "lng": currentPlace.lng
-                        });
-                    }
-                });
+        if (typeof currentResponse != 'undefined' && currentResponse != {}) {
+            currentResponse.countries.forEach(function (currentCountry) {
+                if (typeof currentCountry != 'undefined' && currentCountry != {}) {
+                    var region = currentCountry.country;
+                    currentCountry.cities.forEach(function (currentCity) {
+                        if (typeof currentCity != 'undefined' && currentCity != {}) {
+                            currentCity.places.forEach(function (currentPlace) {
+                                if (typeof currentPlace != 'undefined' && currentPlace != {}) {
+                                    if (!currentPlace.maintenance) {
+                                        localStations.push({
+                                            "id": currentPlace.uid,
+                                            "company": "Nextbike",
+                                            "region": region,
+                                            "bikes_available": currentPlace.bikes,
+                                            "lat": currentPlace.lat,
+                                            "lng": currentPlace.lng
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
             });
-        });
+        }
     });
     console.log("NEXTBIKE BIKES || RECEIVED " + localStations.length + " STATIONS");
 
