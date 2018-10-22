@@ -2,7 +2,7 @@ var request = require('request');
 var HttpsProxyAgent = require('https-proxy-agent');
 var sql = require('@sql');
 
-var proxy = 'http://68.183.76.103:8889';
+var proxy = 'http://67.207.75.35:8889';
 var agent = new HttpsProxyAgent(proxy);
 
 module.exports = {
