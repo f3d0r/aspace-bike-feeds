@@ -2,7 +2,7 @@ var request = require('request');
 var HttpsProxyAgent = require('https-proxy-agent');
 var sql = require('@sql');
 
-var proxy = 'http://lum-customer-hl_d67673fb-zone-zone1:ukn4jz9ognnu@zproxy.lum-superproxy.io:22225';
+var proxy = 'http://aspace-api-proxy:same-001-auth-thats-ok@139.99.164.212:44053';
 var agent = new HttpsProxyAgent(proxy);
 
 module.exports = {
