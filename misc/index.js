@@ -1,9 +1,9 @@
 var request = require('request');
-// var HttpsProxyAgent = require('https-proxy-agent');
+var HttpsProxyAgent = require('https-proxy-agent');
 var sql = require('@sql');
 
-// var proxy = 'http://aspace-api-proxy:same-001-auth-thats-ok@139.99.164.212:44053';
-// var agent = new HttpsProxyAgent(proxy);
+var proxy = 'http://68.183.76.103:8889';
+var agent = new HttpsProxyAgent(proxy);
 
 module.exports = {
     sleep: function (ms) {
@@ -16,7 +16,7 @@ module.exports = {
     performRequest: function (requestOptions) {
         return new Promise(function (resolve, reject) {
             requestOptions.headers['User-Agent'] = "insomnia/6.0.2";
-            // requestOptions.agent = agent;
+            requestOptions.agent = agent;
             request(requestOptions, function (error, response, body) {
                 if (error) {
                     reject(error);
