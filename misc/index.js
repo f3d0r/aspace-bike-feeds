@@ -1,6 +1,9 @@
 var request = require('request');
-var cloudscraper = require('cloudscraper');
+var HttpsProxyAgent = require('https-proxy-agent');
 var sql = require('@sql');
+
+var proxy = 'http://fedor:3Q$Y&Q$K&zfBEZEHxay7Q9@us-wa.proxymesh.com:31280';
+var agent = new HttpsProxyAgent(proxy);
 
 module.exports = {
     sleep: function (ms) {
@@ -13,11 +16,12 @@ module.exports = {
     performRequest: function (requestOptions) {
         return new Promise(function (resolve, reject) {
             requestOptions.headers['User-Agent'] = "insomnia/6.0.2";
-            cloudscraper.request(requestOptions, function (error, response, body) {
+            requestOptions.agent = agent;
+            request(requestOptions, function (error, response, body) {
                 if (error) {
                     reject(error);
                 } else {
-                    resolve(response.body);
+                    resolve(body);
                 }
             });
         });
