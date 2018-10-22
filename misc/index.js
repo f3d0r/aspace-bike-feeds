@@ -17,7 +17,7 @@ module.exports = {
                 if (error) {
                     reject(error);
                 } else {
-                    resolve(body);
+                    resolve(response.body);
                 }
             });
         });
