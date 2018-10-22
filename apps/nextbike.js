@@ -33,7 +33,7 @@ async function reloadNextbike() {
 
     localStations = [];
     responses.forEach(function (currentResponse) {
-        if (typeof currentResponse != 'undefined' && currentResponse != {}) {
+        if (typeof currentResponse.countries != 'undefined' && currentResponse.countries != {}) {
             currentResponse.countries.forEach(function (currentCountry) {
                 if (typeof currentCountry != 'undefined' && currentCountry != {}) {
                     var region = currentCountry.country;
