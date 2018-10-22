@@ -2,7 +2,7 @@ var request = require('request');
 var HttpsProxyAgent = require('https-proxy-agent');
 var sql = require('@sql');
 
-var proxy = 'http://fedor:3Q$Y&Q$K&zfBEZEHxay7Q9@us-wa.proxymesh.com:31280';
+var proxy = 'http://lum-customer-hl_d67673fb-zone-zone1:ukn4jz9ognnu@zproxy.lum-superproxy.io:22225';
 var agent = new HttpsProxyAgent(proxy);
 
 module.exports = {
