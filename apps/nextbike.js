@@ -40,8 +40,9 @@ async function reloadNextbike() {
                     currentCountry.cities.forEach(function (currentCity) {
                         if (typeof currentCity != 'undefined' && currentCity != {}) {
                             currentCity.places.forEach(function (currentPlace) {
-                                if (typeof currentPlace != 'undefined' && currentPlace != {}) {
-                                    if (!currentPlace.maintenance) {
+                                if (typeof currentPlace != 'undefined' && currentPlace != {} && currentPlace.region != 'undefined' && currentPlace.region != '') {
+                                    if (!currentPlace.maintenance && currentPlace.uid != 'undefined' && currentPlace.bikes != 'undefined' &&
+                                        currentPlace.lat != 'undefined' && currentPlace.lng != 'undefined') {
                                         localStations.push({
                                             "id": currentPlace.uid,
                                             "company": "Nextbike",
