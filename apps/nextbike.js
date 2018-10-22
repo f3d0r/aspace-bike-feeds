@@ -80,7 +80,7 @@ async function reloadNextbike() {
 
     toUpdateQueries = "";
     results.idsToUpdate.forEach(function (current) {
-        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.attributes.latitude}', \`lng\`='${current.attributes.longitude}' WHERE \`id\`='${current.id}'; `
+        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.lat}', \`lng\`='${current.lng}' WHERE \`id\`='${current.id}'; `
     });
 
     var updatePromise = sql.runRaw(toUpdateQueries);
