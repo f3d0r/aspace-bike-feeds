@@ -75,6 +75,9 @@ async function reloadScooters() {
         console.log("BIRD SCOOTERS || TOKEN INVALID, REFRESHING...");
         var response = await misc.performRequest(requestOptions.loginOptions(process.env.EMAIL, deviceId));
         console.log("BIRD SCOOTERS || USER ID = " + response.id);
+        if (typeof response.id == 'undefined') {
+            console.log("BIRD SCOOTERS || USER ID IS INVALID: " + JSON.stringify(response));
+        }
         console.log("BIRD SCOOTERS || WAITING FOR EMAIL...");
 
         var loginToken = await waitForLoginToken();
@@ -86,7 +89,7 @@ async function reloadScooters() {
         authToken = auth.token;
         console.log("BIRD SCOOTERS || AUTH TOKEN VALID: " + (authToken.length >= 100));
         if (authToken.length < 100) {
-            console.log("BIRD SCOOTERS || AUTH TOKEN IS INVALID: " + auth);
+            console.log("BIRD SCOOTERS || AUTH TOKEN IS INVALID: " + JSON.stringify(auth));
         }
     }
 
