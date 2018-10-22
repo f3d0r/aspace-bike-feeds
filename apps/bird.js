@@ -86,7 +86,7 @@ async function reloadScooters() {
         authToken = auth.token;
         console.log("BIRD SCOOTERS || AUTH TOKEN VALID: " + (authToken.length >= 100));
         if (authToken.length < 100) {
-            console.log("BIRD SCOOTERS || AUTH TOKEN IS INVALID: " + authToken);
+            console.log("BIRD SCOOTERS || AUTH TOKEN IS INVALID: " + auth);
         }
     }
 
