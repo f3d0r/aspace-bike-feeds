@@ -1,13 +1,9 @@
 var request = require('request');
 var HttpsProxyAgent = require('https-proxy-agent');
-var cloudscraper = require('cloudscraper');
 var sql = require('@sql');
 
 var proxy = 'http://207.229.93.66:1027';
 var agent = new HttpsProxyAgent(proxy);
-
-var jar = request.jar();
-jar.setCookie(request.cookie("__cfduid=de2977286a70a4b3af3852bb134274c711540257577"), "https://api.bird.co/user/login");
 
 module.exports = {
     sleep: function (ms) {
@@ -19,16 +15,13 @@ module.exports = {
     },
     performRequest: function (requestOptions) {
         return new Promise(function (resolve, reject) {
-            requestOptions.headers['User-Agent'] = "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6";
-            requestOptions.agent = agent;
-            requestOptions.jar = 'JAR';
-            cloudscraper.request(requestOptions, function (error, response, body) {
+            requestOptions.headers['User-Agent'] = "insomnia/6.0.2";
+            // requestOptions.agent = agent;
+            request(requestOptions, function (error, response, body) {
                 if (error) {
-                    console.log("HERE:")
-                    console.log(JSON.stringify(error))
                     reject(error);
                 } else {
-                    resolve(response.body);
+                    resolve(body);
                 }
             });
         });
