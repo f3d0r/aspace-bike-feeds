@@ -1,5 +1,4 @@
 require('module-alias/register');
-var request = require('request');
 var perfy = require('perfy');
 var timber = require('timber');
 var haversine = require('haversine');
@@ -19,16 +18,18 @@ if (process.env.LOCAL == "FALSE") {
 async function execute() {
     while (true) {
         perfy.start('lime_partner_reqs');
-        await reloadLime();
-        var resultTime = perfy.end('lime_partner_reqs');
-        await misc.sleep(30000 - resultTime.fullMilliseconds);
+        try {
+            await reloadLime();
+            var resultTime = perfy.end('lime_partner_reqs');
+            await misc.sleep(30000 - resultTime.fullMilliseconds);
+        } catch (e) {}
     }
 }
 execute();
 
 async function reloadLime() {
     var reqs = [];
-    partnerCities.forEach(function(currentRegion) {
+    partnerCities.forEach(function (currentRegion) {
         reqs.push(misc.performRequest(requestOptions.getBikes(currentRegion)));
     });
 
@@ -36,7 +37,7 @@ async function reloadLime() {
     responses = await Promise.all(reqs);
 
     localLimes = [];
-    responses.forEach(function(currentResponse) {
+    responses.forEach(function (currentResponse) {
         localLimes = localLimes.concat(currentResponse.data);
     });
     console.log("LIME PARTNERS || RECEIVED " + localLimes.length + " BIKES");

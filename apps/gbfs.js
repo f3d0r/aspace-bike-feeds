@@ -18,9 +18,11 @@ if (process.env.LOCAL == "FALSE") {
 async function execute() {
     while (true) {
         perfy.start('gbfs_reqs');
-        await reloadGBFS();
-        var resultTime = perfy.end('gbfs_reqs');
-        await misc.sleep(45000 - resultTime.fullMilliseconds);
+        try {
+            await reloadGBFS();
+            var resultTime = perfy.end('gbfs_reqs');
+            await misc.sleep(45000 - resultTime.fullMilliseconds);
+        } catch (e) {}
     }
 }
 execute();

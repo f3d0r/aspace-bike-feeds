@@ -17,9 +17,11 @@ if (process.env.LOCAL == "FALSE") {
 async function execute() {
     while (true) {
         perfy.start('nextbike_reqs');
-        await reloadNextbike();
-        var resultTime = perfy.end('nextbike_reqs');
-        await misc.sleep(30000 - resultTime.fullMilliseconds);
+        try {
+            await reloadNextbike();
+            var resultTime = perfy.end('nextbike_reqs');
+            await misc.sleep(30000 - resultTime.fullMilliseconds);
+        } catch (e) {}
     }
 }
 execute();

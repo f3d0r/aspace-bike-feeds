@@ -18,9 +18,11 @@ if (process.env.LOCAL == "FALSE") {
 async function execute() {
     while (true) {
         perfy.start('spin_reqs');
-        await reloadSpin();
-        var resultTime = perfy.end('spin_reqs');
-        await misc.sleep(30000 - resultTime.fullMilliseconds);
+        try {
+            await reloadSpin();
+            var resultTime = perfy.end('spin_reqs');
+            await misc.sleep(30000 - resultTime.fullMilliseconds);
+        } catch (e) {}
     }
 }
 execute();

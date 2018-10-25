@@ -17,9 +17,11 @@ if (process.env.LOCAL == "FALSE") {
 async function execute() {
     while (true) {
         perfy.start('skip_reqs');
-        await reloadSkip();
-        var resultTime = perfy.end('skip_reqs');
-        await misc.sleep(30000 - resultTime.fullMilliseconds);
+        try {
+            await reloadSkip();
+            var resultTime = perfy.end('skip_reqs');
+            await misc.sleep(30000 - resultTime.fullMilliseconds);
+        } catch (e) {}
     }
 }
 execute();
@@ -36,22 +38,22 @@ async function reloadSkip() {
         localSkips = localSkips.concat(currentResponse.bikes);
     });
     console.log("SKIP SCOOTERS || RECEIVED " + localSkips.length + " SCOOTERS");
-    
+
     var dbSkips = await sql.runRaw(`SELECT * FROM \`bike_locs\` WHERE \`COMPANY\` = 'SKIP'`, true);
     var results = compareSkip(localSkips, dbSkips[0]);
-    
+
     var toRemoveQueries = "";
     results.idsToRemove.forEach(function (current) {
         toRemoveQueries += `DELETE FROM \`bike_locs\` WHERE \`id\` = '${current.id}'; `;
     });
     var removePromise = sql.runRaw(toRemoveQueries, false);
-    
+
     formattedObjects = [];
     results.idsToAdd.forEach(function (current) {
         formattedObjects.push(['Skip', 'US', current.bike_id, 1, "scooter", current.lat, current.lon]);
     });
     var addPromise = sql.addObjects('bike_locs', ['company', 'region', 'id', 'bikes_available', 'type', 'lat', 'lng'], formattedObjects);
-    
+
     toUpdateQueries = "";
     results.idsToUpdate.forEach(function (current) {
         toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.lat}', \`lng\`='${current.lon}' WHERE \`id\`='${current.id}'; `

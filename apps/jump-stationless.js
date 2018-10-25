@@ -8,7 +8,7 @@ var misc = require('@misc');
 var requestOptions = require('../request-config/jump-stationless');
 
 const locUpdateThresholdMeters = process.env.LOC_UPDATE_THRESHOLD_METERS;
-const cities = ['atx', 'nyc', 'chi'];
+const cities = ['atx', 'chi', 'nyc'];
 
 if (process.env.LOCAL == "FALSE") {
     const transport = new timber.transports.HTTPS(process.env.TIMBER_TOKEN);
@@ -18,9 +18,11 @@ if (process.env.LOCAL == "FALSE") {
 async function execute() {
     while (true) {
         perfy.start('jump_stationless_reqs');
-        await reloadJump();
-        var resultTime = perfy.end('jump_stationless_reqs');
-        await misc.sleep(30000 - resultTime.fullMilliseconds);
+        try {
+            await reloadJump();
+            var resultTime = perfy.end('jump_stationless_reqs');
+            await misc.sleep(30000 - resultTime.fullMilliseconds);
+        } catch (e) {}
     }
 }
 execute();

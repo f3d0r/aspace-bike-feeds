@@ -32,9 +32,11 @@ var circleGeoJSON = [];
 async function execute() {
     while (true) {
         perfy.start('bird_reqs');
-        await reloadScooters();
-        var resultTime = perfy.end('bird_reqs');
-        await misc.sleep(45000 - resultTime.fullMilliseconds);
+        try {
+            await reloadScooters();
+            var resultTime = perfy.end('bird_reqs');
+            await misc.sleep(45000 - resultTime.fullMilliseconds);
+        } catch (e) {}
     }
 }
 execute();
