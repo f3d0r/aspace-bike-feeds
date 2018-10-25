@@ -2,7 +2,7 @@ var request = require('request');
 var HttpsProxyAgent = require('https-proxy-agent');
 var sql = require('@sql');
 
-var proxy = 'http://207.229.93.66:1027';
+var proxy = 'http://lum-customer-aspace-zone-residential-country-us:57394adb8143@zproxy.lum-superproxy.io:22225';
 var agent = new HttpsProxyAgent(proxy);
 
 module.exports = {
@@ -16,7 +16,7 @@ module.exports = {
     performRequest: function (requestOptions) {
         return new Promise(function (resolve, reject) {
             requestOptions.headers['User-Agent'] = "insomnia/6.0.2";
-            // requestOptions.agent = agent;
+            requestOptions.agent = agent;
             request(requestOptions, function (error, response, body) {
                 if (error) {
                     reject(error);
