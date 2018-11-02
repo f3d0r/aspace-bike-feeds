@@ -70,7 +70,7 @@ async function reloadBirdGBFS() {
 
     formattedObjects = [];
     results.idsToAdd.forEach(function (current) {
-        formattedObjects.push([current.company, current.region, current.id, current.bikes_available, company.type, current.lat, current.lng]);
+        formattedObjects.push([current.company, current.region, current.id, current.bikes_available, current.type, current.lat, current.lng]);
     });
     var addPromise = sql.addObjects('bike_locs', ['company', 'region', 'id', 'bikes_available', 'type', 'lat', 'lng'], formattedObjects);
 
