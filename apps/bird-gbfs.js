@@ -24,7 +24,7 @@ async function execute() {
             var resultTime = perfy.end('bird_gbfs_reqs');
             await misc.sleep(45000 - resultTime.fullMilliseconds);
         } catch (e) {
-            throw e;
+            console.log("ERROR: " + JSON.stringify(e));
         }
     }
 }
@@ -32,7 +32,7 @@ execute();
 
 async function reloadBirdGBFS() {
     var reqs = [];
-    birdGBFSCities.forEach(function(currentCity) {
+    birdGBFSCities.forEach(function (currentCity) {
         reqs.push(misc.performRequest(requestOptions.getBikes(currentCity)));
     })
 
@@ -40,8 +40,8 @@ async function reloadBirdGBFS() {
     responses = await Promise.all(reqs);
 
     localBirds = [];
-    responses.forEach(function(currentResponse) {
-        currentResponse.data.bikes.forEach(function(currentBird) {
+    responses.forEach(function (currentResponse) {
+        currentResponse.data.bikes.forEach(function (currentBird) {
             if (!currentBird.reserved && !currentBird.disabled) {
                 localBirds.push({
                     'company': 'Bird GBFS',

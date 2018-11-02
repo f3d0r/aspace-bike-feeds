@@ -22,7 +22,9 @@ async function execute() {
             await reloadJump();
             var resultTime = perfy.end('jump_stationless_reqs');
             await misc.sleep(30000 - resultTime.fullMilliseconds);
-        } catch (e) {}
+        } catch (e) {
+            console.log("ERROR: " + JSON.stringify(e));
+        }
     }
 }
 execute();

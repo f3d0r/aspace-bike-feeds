@@ -36,7 +36,9 @@ async function execute() {
             await reloadScooters();
             var resultTime = perfy.end('bird_reqs');
             await misc.sleep(45000 - resultTime.fullMilliseconds);
-        } catch (e) {}
+        } catch (e) {
+            console.log("ERROR: " + JSON.stringify(e));
+        }
     }
 }
 execute();

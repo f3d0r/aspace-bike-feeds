@@ -22,6 +22,7 @@ async function execute() {
             var resultTime = perfy.end('biki_reqs');
             await misc.sleep(45000 - resultTime.fullMilliseconds);
         } catch (e) {
+            console.log("ERROR: " + JSON.stringify(e));
         }
     }
 }

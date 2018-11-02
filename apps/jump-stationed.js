@@ -25,7 +25,7 @@ async function execute() {
             var resultTime = perfy.end('jump_stationed_reqs');
             await misc.sleep(30000 - resultTime.fullMilliseconds);
         } catch (e) {
-            throw e
+            console.log("ERROR: " + JSON.stringify(e));
         }
     }
 }

@@ -22,7 +22,9 @@ async function execute() {
             await reloadGBFS();
             var resultTime = perfy.end('gbfs_reqs');
             await misc.sleep(45000 - resultTime.fullMilliseconds);
-        } catch (e) {}
+        } catch (e) {
+            console.log("ERROR: " + JSON.stringify(e));
+        }
     }
 }
 execute();

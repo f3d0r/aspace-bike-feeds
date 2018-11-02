@@ -21,7 +21,9 @@ async function execute() {
             await reloadSkip();
             var resultTime = perfy.end('skip_reqs');
             await misc.sleep(30000 - resultTime.fullMilliseconds);
-        } catch (e) {}
+        } catch (e) {
+            console.log("ERROR: " + JSON.stringify(e));
+        }
     }
 }
 execute();
