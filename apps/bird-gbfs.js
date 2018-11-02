@@ -22,7 +22,7 @@ async function execute() {
         try {
             await reloadBirdGBFS();
             var resultTime = perfy.end('bird_gbfs_reqs');
-            await misc.sleep(30000 - resultTime.fullMilliseconds);
+            await misc.sleep(45000 - resultTime.fullMilliseconds);
         } catch (e) {
             throw e;
         }
@@ -32,22 +32,35 @@ execute();
 
 async function reloadBirdGBFS() {
     var reqs = [];
-    birdGBFSCities.forEach(function (currentCity) {
+    birdGBFSCities.forEach(function(currentCity) {
         reqs.push(misc.performRequest(requestOptions.getBikes(currentCity)));
-    });
+    })
 
     console.log("BIRD GBFS || LOADING SCOOTERS");
     responses = await Promise.all(reqs);
 
     localBirds = [];
     responses.forEach(function(currentResponse) {
-        localBirds = localBirds.concat(currentResponse.data.bikes.filter(bike => !bike.reserved && !bike.disabled))
+        currentResponse.data.bikes.forEach(function(currentBird) {
+            if (!currentBird.reserved && !currentBird.disabled) {
+                localBirds.push({
+                    'company': 'Bird GBFS',
+                    'region': 'US',
+                    'id': currentBird.bike_id,
+                    'bikes_available': 1,
+                    'type': 'scooter',
+                    'lat': currentBird.lat,
+                    'lng': currentBird.lng
+                })
+            }
+        });
     });
-    console.log("BIRD GBFS || RECEIVED " + localBirds.length + " SCOOTERS ");
+
+    console.log("BIRD GBFS || RECEIVED " + localBirds.length + " SCOOTERS");
 
     var dbBirds = await sql.regularSelect('bike_locs', '*', ['company'], ['='], ['Bird GBFS']);
 
-    var results = compareBirds(localBirds, dbBirds[0]);
+    var results = compareBikes(localBirds, dbBirds[0]);
 
     var toRemoveQueries = "";
     results.idsToRemove.forEach(function (current) {
@@ -57,13 +70,13 @@ async function reloadBirdGBFS() {
 
     formattedObjects = [];
     results.idsToAdd.forEach(function (current) {
-        formattedObjects.push(['Bird GBFS', 'US', current.bike_id, 1, 'scooter', current.lat, current.lng, current.battery_level]);
-    })
-    var addPromise = sql.addObjects('bike_locs', ['company', 'region', 'id', 'bikes_available', 'type', 'lat', 'lng', 'battery_level'], formattedObjects);
+        formattedObjects.push([current.company, current.region, current.id, current.bikes_available, 'stationed_bikes', current.lat, current.lng]);
+    });
+    var addPromise = sql.addObjects('bike_locs', ['company', 'region', 'id', 'bikes_available', 'type', 'lat', 'lng'], formattedObjects);
 
     toUpdateQueries = "";
     results.idsToUpdate.forEach(function (current) {
-        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.lat}', \`lng\`='${current.lng}', \`battery_level\`='${current.battery_level}' WHERE \`id\`='${current.bike_id}'; `
+        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.lat}', \`lng\`='${current.lng}', \`bikes_available\`='${current.bikes_available}' WHERE \`id\`='${current.id}'; `
     });
 
     var updatePromise = sql.runRaw(toUpdateQueries);
@@ -72,39 +85,38 @@ async function reloadBirdGBFS() {
     console.log(`BIRD GBFS || SUCCESS: ADDED: ${results.idsToAdd.length}, UPDATED: ${results.idsToUpdate.length}, REMOVED: ${results.idsToRemove.length}`);
 }
 
-function compareBirds(localBirds, dbBirds) {
+function compareBikes(localBikes, dbBikes) {
     idsToUpdate = [];
 
-    localBirds.forEach(function (currentBird) {
-        if (dbBirds.some(item => item.id == currentBird.bike_id)) {
-            var similarBird = dbBirds.filter(bird => bird.id == currentBird.bike_id);
-            if (similarBird[0].lat != currentBird.lat || similarBird[0].lng != currentBird.lng || similarBird[0].battery_level != currentBird.battery_level) {
-                const currentBirdLoc = {
-                    'latitude': currentBird.lat,
-                    'longitude': currentBird.lng
+    localBikes.forEach(function (currentBike) {
+        if (dbBikes.some(item => item.id == currentBike.id)) {
+            var similarBike = dbBikes.filter(bike => bike.id == currentBike.id);
+            if (similarBike[0].lat != currentBike.lat || similarBike[0].lng != currentBike.lng) {
+                const currentBikeLoc = {
+                    'latitude': currentBike.lat,
+                    'longitude': currentBike.lng
                 };
 
-                const similarBirdLoc = {
-                    'latitude': similarBird[0].lat,
-                    'longitude': similarBird[0].lng
+                const similarBikeLoc = {
+                    'latitude': similarBike[0].lat,
+                    'longitude': similarBike[0].lng
                 };
 
-                if (!haversine(currentBirdLoc, similarBirdLoc, {
+                if (!haversine(currentBikeLoc, similarBikeLoc, {
                         threshold: locUpdateThresholdMeters,
                         unit: 'meter'
-                    }) || similarBird[0].battery_level != currentBird.battery_level) {
-                    idsToUpdate.push(currentBird);
+                    }) || currentBike.bikes_available != similarBike[0].bikes_available) {
+                    idsToUpdate.push(currentBike);
                 }
-
             }
         }
     });
 
-    var idsToAdd = localBirds.filter(function (currentBird) {
-        return !dbBirds.some(bird => bird.id == currentBird.bike_id)
+    var idsToAdd = localBikes.filter(function (currentBike) {
+        return !dbBikes.some(bike => bike.id == currentBike.id)
     });
-    var idsToRemove = dbBirds.filter(function (currentBird) {
-        return !localBirds.some(bird => bird.bike_id == currentBird.id)
+    var idsToRemove = dbBikes.filter(function (currentBike) {
+        return !localBikes.some(bike => bike.id == currentBike.id)
     });
 
     return {
