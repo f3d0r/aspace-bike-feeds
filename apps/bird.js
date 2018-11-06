@@ -13,7 +13,7 @@ var misc = require('@misc');
 var requestOptions = require('../request-config/bird');
 
 const locUpdateThresholdMeters = process.env.LOC_UPDATE_THRESHOLD_METERS;
-const limit = pLimit(500);
+const limit = pLimit(process.env.CONCURRENT_REQUESTS);
 const deviceId = process.env.DEVICE_ID;
 const bikeSearchRadiusMiles = process.env.BIKE_SEARCH_RADIUS_MILES;
 
