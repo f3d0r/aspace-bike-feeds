@@ -2,7 +2,7 @@ var request = require('request');
 var HttpsProxyAgent = require('https-proxy-agent');
 var sql = require('@sql');
 
-var proxy = 'http://lum-customer-aspace-zone-residential-country-us:57394adb8143@zproxy.lum-superproxy.io:22225';
+var proxy = 'http://customer-rtryaspace:NFq7KRdGpF@us-pr.oxylabs.io:10001';
 var agent = new HttpsProxyAgent(proxy);
 
 module.exports = {
@@ -13,10 +13,12 @@ module.exports = {
             return Promise.resolve();
         }
     },
-    performRequest: function (requestOptions) {
+    performRequest: function (requestOptions, useProxy = false) {
         return new Promise(function (resolve, reject) {
             requestOptions.headers['User-Agent'] = "insomnia/6.0.2";
-            // requestOptions.agent = agent;
+            if (useProxy) {
+                requestOptions.agent = agent;
+            }
             request(requestOptions, function (error, response, body) {
                 if (error) {
                     reject(error);
