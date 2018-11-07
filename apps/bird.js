@@ -1,4 +1,6 @@
 require('module-alias/register');
+require('sqreen');
+
 var turf = require('@turf/turf');
 var pLimit = require('p-limit');
 var perfy = require('perfy');

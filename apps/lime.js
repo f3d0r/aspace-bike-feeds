@@ -1,11 +1,14 @@
+require('module-alias/register');
+require('sqreen');
+
 var request = require('request');
-const express = require('express');
-const bodyParser = require('body-parser');
+var express = require('express');
+var bodyParser = require('body-parser');
 var fs = require('fs');
 var path = require('path');
 var rootPath = require('app-root-path');
 
-const app = express();
+var app = express();
 
 app.use(bodyParser.urlencoded({
     extended: false
