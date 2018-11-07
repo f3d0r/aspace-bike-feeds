@@ -9,7 +9,7 @@ var requestOptions = require('../request-config/jump-stationed');
 
 const locUpdateThresholdMeters = process.env.LOC_UPDATE_THRESHOLD_METERS;
 
-const jumpBikeCities = ['den', 'sac', 'sf', 'sc', 'pvd'];
+const jumpBikeCities = ['den', 'sac', 'sf', 'sc', 'pvd', 'la'];
 const jumpMobilityCities = ['dc'];
 
 if (process.env.LOCAL == "FALSE") {
