@@ -49,7 +49,11 @@ async function reloadJump() {
     responses = await Promise.all(reqs);
 
     localBikes = [];
+    var cityPrefixes = jumpBikeCities.concat(jumpMobilityCities)
+    var cityIndex = 0;
+
     for (var index = 0; index < reqs.length; index += 3) {
+        var cityPrefix = cityPrefixes[cityIndex] + "-";
         responses[index].data.stations.forEach(function (currentStationStatus) {
             if (typeof currentStationStatus.is_installed != 'undefined' && currentStationStatus.is_installed == 1 &&
                 typeof currentStationStatus.is_renting != 'undefined' && currentStationStatus.is_renting == 1 &&
@@ -57,9 +61,9 @@ async function reloadJump() {
                 currentFormattedBike = {};
                 currentFormattedBike['company'] = 'Jump Stationed';
                 currentFormattedBike['region'] = 'US';
-                currentFormattedBike['id'] = currentStationStatus.station_id;
+                currentFormattedBike['id'] = cityPrefix + currentStationStatus.station_id;
                 currentFormattedBike['bikes_available'] = currentStationStatus.num_bikes_available;
-                var similarStation = responses[index + 1].data.stations.filter(station => station.station_id == currentFormattedBike.id);
+                var similarStation = responses[index + 1].data.stations.filter(station => cityPrefix + station.station_id == currentFormattedBike.id);
                 if (similarStation.length == 1) {
                     currentFormattedBike['lat'] = similarStation[0].lat;
                     currentFormattedBike['lng'] = similarStation[0].lon;
@@ -67,16 +71,19 @@ async function reloadJump() {
                 localBikes.push(currentFormattedBike);
             }
         })
+        cityIndex++;
     }
 
+    cityIndex = 0;
     for (var index = 2; index < reqs.length; index += 3) {
+        var cityPrefix = cityPrefixes[cityIndex] + "-";
         responses[index].data.bikes.forEach(function (currentBike) {
             if (typeof currentBike.is_reserved != 'undefined' && currentBike.is_reserved == 0 &&
                 typeof currentBike.is_disabled != 'undefined' && currentBike.is_disabled == 0) {
                 currentFormattedBike = {};
                 currentFormattedBike['company'] = 'Jump Stationed';
                 currentFormattedBike['region'] = 'US';
-                currentFormattedBike['id'] = currentBike.bike_id;
+                currentFormattedBike['id'] = cityPrefix + currentBike.bike_id;
                 currentFormattedBike['name'] = currentBike.name;
                 currentFormattedBike['bikes_available'] = 1;
                 currentFormattedBike['lat'] = currentBike.lat;
@@ -84,6 +91,7 @@ async function reloadJump() {
                 localBikes.push(currentFormattedBike);
             }
         });
+        cityIndex++;
     }
 
     console.log("JUMP STATIONED || RECEIVED " + localBikes.length + " BIKES AND STATIONS");
