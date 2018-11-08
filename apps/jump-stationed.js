@@ -5,8 +5,8 @@ require('module-alias/register');
 var perfy = require('perfy');
 var haversine = require('haversine');
 var Logger = require('logdna');
-var ip = require('ip')
-var os = require('os')
+var ip = require('ip');
+var os = require('os');
 
 //LOCAL IMPORTS
 var sql = require('@sql');

@@ -9,6 +9,9 @@ var bodyParser = require('body-parser');
 var fs = require('fs');
 var path = require('path');
 var rootPath = require('app-root-path');
+var Logger = require('logdna');
+var ip = require('ip');
+var os = require('os');
 
 //EXPRESS SETUP
 var app = express();
