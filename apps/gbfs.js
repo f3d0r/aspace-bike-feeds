@@ -1,20 +1,37 @@
+//GLOBAL IMPORTS
 require('module-alias/register');
+
+//PACKAGE IMPORTS
 var perfy = require('perfy');
-var timber = require('timber');
 var haversine = require('haversine');
 
+//LOCAL IMPORTS
 var sql = require('@sql');
 var misc = require('@misc');
 var requestOptions = require('../request-config/gbfs');
 var feeds = require('../config/gbfs-systems').systems;
 
+//CONSTANTS
 const locUpdateThresholdMeters = process.env.LOC_UPDATE_THRESHOLD_METERS;
 
-if (process.env.LOCAL == "FALSE") {
-    const transport = new timber.transports.HTTPS(process.env.TIMBER_TOKEN);
-    timber.install(transport);
+//LOGGING SETUP
+var logger = Logger.setupDefaultLogger(process.env.LOG_DNA_API_KEY, {
+    hostname: os.hostname(),
+    ip: ip.address(),
+    app: process.env.APP_NAME,
+    env: process.env.ENV_NAME,
+    index_meta: true,
+    tags: process.env.APP_NAME + ',' + process.env.ENV_NAME + ',' + os.hostname()
+});
+console.log = function (d) {
+    process.stdout.write(d + '\n');
+    logger.log(d);
+}
+logger.write = function (d) {
+    console.log(d)
 }
 
+//MAIN SCRIPT
 async function execute() {
     while (true) {
         perfy.start('gbfs_reqs');

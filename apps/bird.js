@@ -1,36 +1,52 @@
+//GLOBAL IMPORTS
 require('module-alias/register');
 require('sqreen');
 
+//PACKAGE IMPORTS
 var turf = require('@turf/turf');
 var pLimit = require('p-limit');
 var perfy = require('perfy');
-var timber = require('timber');
 var express = require("express");
 var bodyParser = require('body-parser');
 var waitUntil = require('async-wait-until');
 var haversine = require('haversine');
 
+//LOCAL IMPORTS
 var sql = require('@sql');
 var misc = require('@misc');
 var requestOptions = require('../request-config/bird');
 
+//CONSTANTS
 const locUpdateThresholdMeters = process.env.LOC_UPDATE_THRESHOLD_METERS;
 const limit = pLimit(process.env.CONCURRENT_REQUESTS);
 const deviceId = process.env.DEVICE_ID;
 const bikeSearchRadiusMiles = process.env.BIKE_SEARCH_RADIUS_MILES;
 
-if (process.env.LOCAL == "FALSE") {
-    const transport = new timber.transports.HTTPS(process.env.TIMBER_TOKEN);
-    timber.install(transport);
+//LOGGING SETUP
+var logger = Logger.setupDefaultLogger(process.env.LOG_DNA_API_KEY, {
+    hostname: os.hostname(),
+    ip: ip.address(),
+    app: process.env.APP_NAME,
+    env: process.env.ENV_NAME,
+    index_meta: true,
+    tags: process.env.APP_NAME + ',' + process.env.ENV_NAME + ',' + os.hostname()
+});
+console.log = function (d) {
+    process.stdout.write(d + '\n');
+    logger.log(d);
+}
+logger.write = function (d) {
+    console.log(d)
 }
 
+//SCRIPT VARS
 var loginToken = undefined;
 var authToken = undefined;
 var requestsOnToken = 0;
-
 var parkingLocs = undefined;
 var circleGeoJSON = [];
 
+//MAIN SCRIPT
 async function execute() {
     while (true) {
         perfy.start('bird_reqs');
