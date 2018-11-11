@@ -3,10 +3,9 @@ module.exports = {
         return {
             method: 'GET',
             url: 'https://' + cityAbbreviation + '.jumpbikes.com/opendata/free_bike_status.json',
-            headers: {
-            },
+            headers: {},
             timeout: 5000,
             json: true
         };
     }
-}
+};

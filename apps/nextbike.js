@@ -28,10 +28,10 @@ var logger = Logger.setupDefaultLogger(process.env.LOG_DNA_API_KEY, {
 console.log = function (d) {
     process.stdout.write(d + '\n');
     logger.log(d);
-}
+};
 logger.write = function (d) {
-    console.log(d)
-}
+    console.log(d);
+};
 
 //MAIN SCRIPT
 async function execute() {
@@ -104,7 +104,7 @@ async function reloadNextbike() {
 
     toUpdateQueries = "";
     results.idsToUpdate.forEach(function (current) {
-        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.lat}', \`lng\`='${current.lng}' WHERE \`id\`='${current.id}'; `
+        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.lat}', \`lng\`='${current.lng}' WHERE \`id\`='${current.id}'; `;
     });
 
     var updatePromise = sql.runRaw(toUpdateQueries);
@@ -141,15 +141,15 @@ function compareNextBikes(localBikes, dbBikes) {
     });
 
     var idsToAdd = localBikes.filter(function (currentBike) {
-        return !dbBikes.some(bike => bike.id == currentBike.id)
+        return !dbBikes.some(bike => bike.id == currentBike.id);
     });
     var idsToRemove = dbBikes.filter(function (currentBike) {
-        return !localBikes.some(bike => bike.id == currentBike.id)
+        return !localBikes.some(bike => bike.id == currentBike.id);
     });
 
     return {
         idsToUpdate,
         idsToAdd,
         idsToRemove
-    }
+    };
 }

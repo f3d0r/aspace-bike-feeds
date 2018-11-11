@@ -14,7 +14,7 @@ module.exports = {
             },
             timeout: 5000,
             json: true
-        }
+        };
     },
     scooterOptions: function (lat, lng, radius, authToken, deviceId) {
         var location = {
@@ -24,7 +24,7 @@ module.exports = {
             "accuracy": 100,
             "speed": -1,
             "heading": -1
-        }
+        };
         return {
             method: 'GET',
             url: 'https://api.bird.co/bird/nearby',
@@ -74,4 +74,4 @@ module.exports = {
             json: true
         };
     }
-}
+};

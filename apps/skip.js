@@ -28,10 +28,10 @@ var logger = Logger.setupDefaultLogger(process.env.LOG_DNA_API_KEY, {
 console.log = function (d) {
     process.stdout.write(d + '\n');
     logger.log(d);
-}
+};
 logger.write = function (d) {
-    console.log(d)
-}
+    console.log(d);
+};
 
 //MAIN SCRIPT
 async function execute() {
@@ -78,7 +78,7 @@ async function reloadSkip() {
 
     toUpdateQueries = "";
     results.idsToUpdate.forEach(function (current) {
-        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.lat}', \`lng\`='${current.lon}' WHERE \`id\`='${current.id}'; `
+        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.lat}', \`lng\`='${current.lon}' WHERE \`id\`='${current.id}'; `;
     });
 
     var updatePromise = sql.runRaw(toUpdateQueries, false);
@@ -115,15 +115,15 @@ function compareSkip(localSkip, dbSkip) {
     });
 
     var idsToAdd = localSkip.filter(function (currentSkip) {
-        return !dbSkip.some(skip => skip.id == currentSkip.bike_id)
+        return !dbSkip.some(skip => skip.id == currentSkip.bike_id);
     });
     var idsToRemove = dbSkip.filter(function (currentSkip) {
-        return !localSkip.some(skip => skip.bike_id == currentSkip.id)
+        return !localSkip.some(skip => skip.bike_id == currentSkip.id);
     });
 
     return {
         idsToUpdate,
         idsToAdd,
         idsToRemove
-    }
+    };
 }

@@ -43,7 +43,7 @@ module.exports = {
 
         toUpdateQueries = "";
         compareResults.idsToUpdate.forEach(function (current) {
-            toUpdateQueries += `UPDATE \`${databaseName}\` SET \`lat\`='${current[latKeyName]}', \`lng\`='${current[lngKeyName]}' WHERE \`id\`='${current.id}'; `
+            toUpdateQueries += `UPDATE \`${databaseName}\` SET \`lat\`='${current[latKeyName]}', \`lng\`='${current[lngKeyName]}' WHERE \`id\`='${current.id}'; `;
         });
         var updatePromise = sql.runRaw(toUpdateQueries);
 
@@ -51,9 +51,9 @@ module.exports = {
             removePromise,
             addPromise,
             updatePromise
-        }
+        };
     },
     getGBFSPromises: function () {
 
     }
-}
+};

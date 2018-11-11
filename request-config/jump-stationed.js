@@ -1,8 +1,8 @@
 module.exports = {
     getStationsStatus: function (systemPrefix, isJumpMobility = false) {
-        var firstUrlPart = '.jumpbikes.com'
+        var firstUrlPart = '.jumpbikes.com';
         if (isJumpMobility) {
-            firstUrlPart = '.jumpmobility.com'
+            firstUrlPart = '.jumpmobility.com';
         }
         return {
             method: 'GET',
@@ -13,9 +13,9 @@ module.exports = {
         };
     },
     getStationInfo: function (systemPrefix, isJumpMobility = false) {
-        var firstUrlPart = '.jumpbikes.com'
+        var firstUrlPart = '.jumpbikes.com';
         if (isJumpMobility) {
-            firstUrlPart = '.jumpmobility.com'
+            firstUrlPart = '.jumpmobility.com';
         }
         return {
             method: 'GET',
@@ -26,9 +26,9 @@ module.exports = {
         };
     },
     getFreeBikes: function (systemPrefix, isJumpMobility = false) {
-        var firstUrlPart = '.jumpbikes.com'
+        var firstUrlPart = '.jumpbikes.com';
         if (isJumpMobility) {
-            firstUrlPart = '.jumpmobility.com'
+            firstUrlPart = '.jumpmobility.com';
         }
         return {
             method: 'GET',
@@ -38,4 +38,4 @@ module.exports = {
             json: true
         };
     }
-}
+};

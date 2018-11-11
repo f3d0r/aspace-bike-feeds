@@ -29,10 +29,10 @@ var logger = Logger.setupDefaultLogger(process.env.LOG_DNA_API_KEY, {
 console.log = function (d) {
     process.stdout.write(d + '\n');
     logger.log(d);
-}
+};
 logger.write = function (d) {
-    console.log(d)
-}
+    console.log(d);
+};
 
 //MAIN SCRIPT
 async function execute() {
@@ -77,7 +77,7 @@ async function reloadGBFS() {
             matchingStationInfo = matchingStationInfo[0];
             localStations.push({
                 "id": matchingStationInfo.station_id,
-                "company": feeds[systemIndex]["Name"],
+                "company": feeds[systemIndex].Name,
                 "region": feeds[systemIndex]["Country Code"],
                 "bikes_available": currentStation.num_bikes_available,
                 "type": "bike",
@@ -90,7 +90,7 @@ async function reloadGBFS() {
     }
     console.log("GBFS SYSTEMS || RECEIVED " + localStations.length + " STATIONS");
 
-    var companies = feeds.map(feed => feed["Name"]);
+    var companies = feeds.map(feed => feed.Name);
     var operators = Array.apply(null, Array(feeds.length)).map(function () {
         return '=';
     });
@@ -116,7 +116,7 @@ async function reloadGBFS() {
 
     toUpdateQueries = "";
     results.idsToUpdate.forEach(function (current) {
-        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.lat}', \`lng\`='${current.lng}' WHERE \`id\`='${current.id}'; `
+        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.lat}', \`lng\`='${current.lng}' WHERE \`id\`='${current.id}'; `;
     });
 
     var updatePromise = sql.runRaw(toUpdateQueries);
@@ -153,15 +153,15 @@ function compareGBFS(localGBFS, dbGBFS) {
     });
 
     var idsToAdd = localGBFS.filter(function (currentStation) {
-        return !dbGBFS.some(station => station.id == currentStation.id)
+        return !dbGBFS.some(station => station.id == currentStation.id);
     });
     var idsToRemove = dbGBFS.filter(function (currentStation) {
-        return !localGBFS.some(station => station.id == currentStation.id)
+        return !localGBFS.some(station => station.id == currentStation.id);
     });
 
     return {
         idsToUpdate,
         idsToAdd,
         idsToRemove
-    }
+    };
 }

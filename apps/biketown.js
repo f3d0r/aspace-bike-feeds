@@ -28,10 +28,10 @@ var logger = Logger.setupDefaultLogger(process.env.LOG_DNA_API_KEY, {
 console.log = function (d) {
     process.stdout.write(d + '\n');
     logger.log(d);
-}
+};
 logger.write = function (d) {
-    console.log(d)
-}
+    console.log(d);
+};
 
 //MAIN SCRIPT
 async function execute() {
@@ -63,29 +63,29 @@ async function reloadBikeTown() {
             typeof currentStationStatus.is_renting != 'undefined' && currentStationStatus.is_renting == 1 &&
             typeof currentStationStatus.is_returning != 'undefined' && currentStationStatus.is_returning == 1) {
             currentFormattedBike = {};
-            currentFormattedBike['company'] = 'Biketown PDX';
-            currentFormattedBike['region'] = 'US';
-            currentFormattedBike['id'] = currentStationStatus.station_id;
-            currentFormattedBike['bikes_available'] = currentStationStatus.num_bikes_available;
+            currentFormattedBike.company = 'Biketown PDX';
+            currentFormattedBikeregion = 'US';
+            currentFormattedBike.id = currentStationStatus.station_id;
+            currentFormattedBike.bikes_available = currentStationStatus.num_bikes_available;
             var similarStation = responses[1].data.stations.filter(station => station.station_id == currentFormattedBike.id);
             if (similarStation.length == 1) {
-                currentFormattedBike['lat'] = similarStation[0].lat;
-                currentFormattedBike['lng'] = similarStation[0].lon;
+                currentFormattedBike.lat = similarStation[0].lat;
+                currentFormattedBike.lng = similarStation[0].lon;
             }
             localBikes.push(currentFormattedBike);
         }
-    })
+    });
     responses[2].data.bikes.forEach(function (currentBike) {
         if (typeof currentBike.is_reserved != 'undefined' && currentBike.is_reserved == 0 &&
             typeof currentBike.is_disabled != 'undefined' && currentBike.is_disabled == 0) {
             currentFormattedBike = {};
-            currentFormattedBike['company'] = 'Biketown PDX';
-            currentFormattedBike['region'] = 'US';
-            currentFormattedBike['id'] = currentBike.bike_id;
-            currentFormattedBike['name'] = currentBike.name;
-            currentFormattedBike['bikes_available'] = 1;
-            currentFormattedBike['lat'] = currentBike.lat;
-            currentFormattedBike['lng'] = currentBike.lon;
+            currentFormattedBike.company = 'Biketown PDX';
+            currentFormattedBike.region = 'US';
+            currentFormattedBike.id = currentBike.bike_id;
+            currentFormattedBike.name = currentBike.name;
+            currentFormattedBike.bikes_available = 1;
+            currentFormattedBike.lat = currentBike.lat;
+            currentFormattedBike.lng = currentBike.lon;
             localBikes.push(currentFormattedBike);
         }
     });
@@ -110,7 +110,7 @@ async function reloadBikeTown() {
 
     toUpdateQueries = "";
     results.idsToUpdate.forEach(function (current) {
-        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.lat}', \`lng\`='${current.lng}', \`bikes_available\`='${current.bikes_available}' WHERE \`id\`='${current.id}'; `
+        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.lat}', \`lng\`='${current.lng}', \`bikes_available\`='${current.bikes_available}' WHERE \`id\`='${current.id}'; `;
     });
 
     var updatePromise = sql.runRaw(toUpdateQueries);
@@ -147,15 +147,15 @@ function compareBikes(localBikes, dbBikes) {
     });
 
     var idsToAdd = localBikes.filter(function (currentBike) {
-        return !dbBikes.some(bike => bike.id == currentBike.id)
+        return !dbBikes.some(bike => bike.id == currentBike.id);
     });
     var idsToRemove = dbBikes.filter(function (currentBike) {
-        return !localBikes.some(bike => bike.id == currentBike.id)
+        return !localBikes.some(bike => bike.id == currentBike.id);
     });
 
     return {
         idsToUpdate,
         idsToAdd,
         idsToRemove
-    }
+    };
 }

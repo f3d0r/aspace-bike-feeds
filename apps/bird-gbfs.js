@@ -15,7 +15,7 @@ var requestOptions = require('../request-config/bird-gbfs');
 
 //CONSTANTS
 const locUpdateThresholdMeters = process.env.LOC_UPDATE_THRESHOLD_METERS;
-const birdGBFSCities = ['austin', 'dc']
+const birdGBFSCities = ['austin', 'dc'];
 
 //LOGGING SETUP
 var logger = Logger.setupDefaultLogger(process.env.LOG_DNA_API_KEY, {
@@ -29,10 +29,10 @@ var logger = Logger.setupDefaultLogger(process.env.LOG_DNA_API_KEY, {
 console.log = function (d) {
     process.stdout.write(d + '\n');
     logger.log(d);
-}
+};
 logger.write = function (d) {
-    console.log(d)
-}
+    console.log(d);
+};
 
 //MAIN SCRIPT
 async function execute() {
@@ -53,7 +53,7 @@ async function reloadBirdGBFS() {
     var reqs = [];
     birdGBFSCities.forEach(function (currentCity) {
         reqs.push(misc.performRequest(requestOptions.getBikes(currentCity)));
-    })
+    });
 
     console.log("BIRD GBFS || LOADING SCOOTERS");
     responses = await Promise.all(reqs);
@@ -70,7 +70,7 @@ async function reloadBirdGBFS() {
                     'type': 'scooter',
                     'lat': currentBird.lat,
                     'lng': currentBird.lng
-                })
+                });
             }
         });
     });
@@ -95,7 +95,7 @@ async function reloadBirdGBFS() {
 
     toUpdateQueries = "";
     results.idsToUpdate.forEach(function (current) {
-        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.lat}', \`lng\`='${current.lng}', \`bikes_available\`='${current.bikes_available}' WHERE \`id\`='${current.id}'; `
+        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.lat}', \`lng\`='${current.lng}', \`bikes_available\`='${current.bikes_available}' WHERE \`id\`='${current.id}'; `;
     });
 
     var updatePromise = sql.runRaw(toUpdateQueries);
@@ -132,15 +132,15 @@ function compareBikes(localBikes, dbBikes) {
     });
 
     var idsToAdd = localBikes.filter(function (currentBike) {
-        return !dbBikes.some(bike => bike.id == currentBike.id)
+        return !dbBikes.some(bike => bike.id == currentBike.id);
     });
     var idsToRemove = dbBikes.filter(function (currentBike) {
-        return !localBikes.some(bike => bike.id == currentBike.id)
+        return !localBikes.some(bike => bike.id == currentBike.id);
     });
 
     return {
         idsToUpdate,
         idsToAdd,
         idsToRemove
-    }
+    };
 }

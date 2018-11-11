@@ -21,13 +21,13 @@ app.use(bodyParser.urlencoded({
 
 //CONSTANTS
 const port = 3005;
-const baseURL = 'https://web-production.lime.bike/api/rider/'
-const phoneNumber = 'twilio_origin_phone_number'
+const baseURL = 'https://web-production.lime.bike/api/rider/';
+const phoneNumber = 'twilio_origin_phone_number';
 
 //LIME VARS
 var jar = request.jar();
-var currToken = undefined;
-var latLngs = undefined;
+var currToken;
+var latLngs;
 
 //LOGGING SETUP
 var logger = Logger.setupDefaultLogger(process.env.LOG_DNA_API_KEY, {
@@ -41,10 +41,10 @@ var logger = Logger.setupDefaultLogger(process.env.LOG_DNA_API_KEY, {
 console.log = function (d) {
     process.stdout.write(d + '\n');
     logger.log(d);
-}
+};
 logger.write = function (d) {
-    console.log(d)
-}
+    console.log(d);
+};
 
 //MAIN SCRIPT
 fs.readFile(path.join(rootPath.path, 'fullLatLngs.txt'), 'utf-8', function (err, data) {
@@ -94,7 +94,7 @@ function confirmPhone(code) {
         body = JSON.parse(body);
         console.log(body);
         var cookies = response.headers['set-cookie'];
-        setCookie(cookies[0].key, cookies[0].value)
+        setCookie(cookies[0].key, cookies[0].value);
 
         currToken = body.token;
 

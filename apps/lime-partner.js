@@ -29,10 +29,10 @@ var logger = Logger.setupDefaultLogger(process.env.LOG_DNA_API_KEY, {
 console.log = function (d) {
     process.stdout.write(d + '\n');
     logger.log(d);
-}
+};
 logger.write = function (d) {
-    console.log(d)
-}
+    console.log(d);
+};
 
 //MAIN SCRIPT
 async function execute() {
@@ -82,7 +82,7 @@ async function reloadLime() {
 
     toUpdateQueries = "";
     results.idsToUpdate.forEach(function (current) {
-        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.attributes.latitude}', \`lng\`='${current.attributes.longitude}' WHERE \`id\`='${current.id}'; `
+        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.attributes.latitude}', \`lng\`='${current.attributes.longitude}' WHERE \`id\`='${current.id}'; `;
     });
 
     var updatePromise = sql.runRaw(toUpdateQueries);
@@ -119,15 +119,15 @@ function compareLime(localLime, dbLime) {
     });
 
     var idsToAdd = localLime.filter(function (currentLime) {
-        return !dbLime.some(lime => lime.id == currentLime.id)
+        return !dbLime.some(lime => lime.id == currentLime.id);
     });
     var idsToRemove = dbLime.filter(function (currentLime) {
-        return !localLime.some(lime => lime.id == currentLime.id)
+        return !localLime.some(lime => lime.id == currentLime.id);
     });
 
     return {
         idsToUpdate,
         idsToAdd,
         idsToRemove
-    }
+    };
 }

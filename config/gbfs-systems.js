@@ -1620,4 +1620,4 @@ module.exports = {
             "Auto-Discovery URL": "https://asp.publicbikesystem.net/ube/gbfs/v1/"
         }
     ]
-}
+};

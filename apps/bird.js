@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+
 //GLOBAL IMPORTS
 require('module-alias/register');
 require('sqreen');
@@ -37,16 +39,16 @@ var logger = Logger.setupDefaultLogger(process.env.LOG_DNA_API_KEY, {
 console.log = function (d) {
     process.stdout.write(d + '\n');
     logger.log(d);
-}
+};
 logger.write = function (d) {
-    console.log(d)
-}
+    console.log(d);
+};
 
 //SCRIPT VARS
-var loginToken = undefined;
-var authToken = undefined;
+var loginToken;
+var authToken;
 var requestsOnToken = 0;
-var parkingLocs = undefined;
+var parkingLocs;
 var circleGeoJSON = [];
 
 //MAIN SCRIPT
@@ -70,7 +72,7 @@ async function reloadScooters() {
         parkingLocs = parkingLocs[0];
         console.log("BIRD SCOOTERS || REFRESHED PARKING SPOTS");
 
-        console.log("BIRD SCOOTERS || CALCULATING PARKING LOC LAT/LNGS")
+        console.log("BIRD SCOOTERS || CALCULATING PARKING LOC LAT/LNGS");
         circleGeoJSON = [];
         parkingLocs.forEach(function (currentLoc) {
             var center = [currentLoc.lng, currentLoc.lat];
@@ -90,7 +92,7 @@ async function reloadScooters() {
                     'lng': currentLngLat[0],
                     'lat': currentLngLat[1],
                 });
-            })
+            });
         });
         console.log("BIRD SCOOTERS || TOTAL LAT/LNGS TO CHECK = " + lngLats.length);
     }
@@ -151,12 +153,12 @@ async function reloadScooters() {
     formattedObjects = [];
     results.idsToAdd.forEach(function (current) {
         formattedObjects.push(['Bird', 'US', current.id, 1, 'Scooter', current.location.latitude, current.location.longitude, current.battery_level]);
-    })
+    });
     var addPromise = sql.addObjects('bike_locs', ['company', 'region', 'id', 'bikes_available', 'type', 'lat', 'lng', 'battery_level'], formattedObjects);
 
     toUpdateQueries = "";
     results.idsToUpdate.forEach(function (current) {
-        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.location.latitude}', \`lng\`='${current.location.longitude}', \`battery_level\`='${current.battery_level}' WHERE \`id\`='${current.id}'; `
+        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.location.latitude}', \`lng\`='${current.location.longitude}', \`battery_level\`='${current.battery_level}' WHERE \`id\`='${current.id}'; `;
     });
 
     var updatePromise = sql.runRaw(toUpdateQueries);
@@ -191,21 +193,21 @@ function compareBirds(localBirds, dbBirds) {
     });
 
     var idsToAdd = localBirds.filter(function (currentBird) {
-        return !dbBirds.some(bird => bird.id == currentBird.id)
+        return !dbBirds.some(bird => bird.id == currentBird.id);
     });
     var idsToRemove = dbBirds.filter(function (currentBird) {
-        return !localBirds.some(bird => bird.id == currentBird.id)
+        return !localBirds.some(bird => bird.id == currentBird.id);
     });
 
     return {
         idsToUpdate,
         idsToAdd,
         idsToRemove
-    }
+    };
 }
 
 var app = express();
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
 app.post("/", function (req, res) {
     var emailHtml = req.body.html;

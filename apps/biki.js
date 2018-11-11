@@ -28,10 +28,10 @@ var logger = Logger.setupDefaultLogger(process.env.LOG_DNA_API_KEY, {
 console.log = function (d) {
     process.stdout.write(d + '\n');
     logger.log(d);
-}
+};
 logger.write = function (d) {
-    console.log(d)
-}
+    console.log(d);
+};
 
 //MAIN SCRIPT
 async function execute() {
@@ -62,20 +62,20 @@ async function reloadBiki() {
             typeof currentStationStatus.is_renting != 'undefined' && currentStationStatus.is_renting == 1 &&
             typeof currentStationStatus.is_returning != 'undefined' && currentStationStatus.is_returning == 1) {
             currentFormattedBike = {};
-            currentFormattedBike['company'] = 'Biki';
-            currentFormattedBike['region'] = 'US';
-            currentFormattedBike['id'] = 'biki-' + currentStationStatus.station_id;
-            currentFormattedBike['bikes_available'] = currentStationStatus.num_bikes_available;
+            currentFormattedBike.company = 'Biki';
+            currentFormattedBike.region = 'US';
+            currentFormattedBike.id = 'biki-' + currentStationStatus.station_id;
+            currentFormattedBike.bikes_available = currentStationStatus.num_bikes_available;
             var similarStation = responses[1].data.stations.filter(station => 'biki-' + station.station_id == currentFormattedBike.id);
             if (similarStation.length == 1) {
-                currentFormattedBike['lat'] = similarStation[0].lat;
-                currentFormattedBike['lng'] = similarStation[0].lon;
+                currentFormattedBike.lat = similarStation[0].lat;
+                currentFormattedBike.lng = similarStation[0].lon;
             } else {
-                console.log(similarStation.length)
+                console.log(similarStation.length);
             }
             localBiki.push(currentFormattedBike);
         }
-    })
+    });
 
     console.log("BIKI BIKES || RECEIVED " + localBiki.length + " STATIONS");
 
@@ -97,7 +97,7 @@ async function reloadBiki() {
 
     toUpdateQueries = "";
     results.idsToUpdate.forEach(function (current) {
-        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.lat}', \`lng\`='${current.lng}', \`bikes_available\`='${current.bikes_available}' WHERE \`id\`='${current.id}'; `
+        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.lat}', \`lng\`='${current.lng}', \`bikes_available\`='${current.bikes_available}' WHERE \`id\`='${current.id}'; `;
     });
 
     var updatePromise = sql.runRaw(toUpdateQueries);
@@ -134,15 +134,15 @@ function compareBiki(localBiki, dbBiki) {
     });
 
     var idsToAdd = localBiki.filter(function (currentBiki) {
-        return !dbBiki.some(biki => biki.id == currentBiki.id)
+        return !dbBiki.some(biki => biki.id == currentBiki.id);
     });
     var idsToRemove = dbBiki.filter(function (currentBiki) {
-        return !localBiki.some(biki => biki.id == currentBiki.id)
+        return !localBiki.some(biki => biki.id == currentBiki.id);
     });
 
     return {
         idsToUpdate,
         idsToAdd,
         idsToRemove
-    }
+    };
 }

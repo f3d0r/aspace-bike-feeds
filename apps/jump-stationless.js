@@ -29,10 +29,10 @@ var logger = Logger.setupDefaultLogger(process.env.LOG_DNA_API_KEY, {
 console.log = function (d) {
     process.stdout.write(d + '\n');
     logger.log(d);
-}
+};
 logger.write = function (d) {
-    console.log(d)
-}
+    console.log(d);
+};
 
 //MAIN SCRIPT
 async function execute() {
@@ -53,7 +53,7 @@ async function reloadJump() {
     var reqs = [];
     cities.forEach(function (currentCity) {
         reqs.push(misc.performRequest(requestOptions.getBikes(currentCity)));
-    })
+    });
 
     console.log("JUMP STATIONLESS || LOADING BIKES");
     responses = await Promise.all(reqs);
@@ -90,7 +90,7 @@ async function reloadJump() {
 
     toUpdateQueries = "";
     results.idsToUpdate.forEach(function (current) {
-        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.lat}', \`lng\`='${current.lon}' WHERE \`id\`='${current.id}'; `
+        toUpdateQueries += `UPDATE \`bike_locs\` SET \`lat\`='${current.lat}', \`lng\`='${current.lon}' WHERE \`id\`='${current.id}'; `;
     });
 
     var updatePromise = sql.runRaw(toUpdateQueries);
@@ -127,15 +127,15 @@ function compareJump(localJump, dbJump) {
     });
 
     var idsToAdd = localJump.filter(function (currentJump) {
-        return !dbJump.some(jump => jump.id == currentJump.bike_id)
+        return !dbJump.some(jump => jump.id == currentJump.bike_id);
     });
     var idsToRemove = dbJump.filter(function (currentJump) {
-        return !localJump.some(jump => jump.bike_id == currentJump.id)
+        return !localJump.some(jump => jump.bike_id == currentJump.id);
     });
 
     return {
         idsToUpdate,
         idsToAdd,
         idsToRemove
-    }
+    };
 }
