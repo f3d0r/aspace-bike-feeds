@@ -101,7 +101,7 @@ async function reloadJump() {
                 typeof currentBike.is_disabled != 'undefined' && currentBike.is_disabled == 0) {
                 currentFormattedBike = {};
                 currentFormattedBike.company = 'Jump Stationed';
-                currentFormattedBikeregion = 'US';
+                currentFormattedBike.region = 'US';
                 currentFormattedBike.id = cityPrefix + currentBike.bike_id;
                 currentFormattedBike.name = currentBike.name;
                 currentFormattedBike.bikes_available = 1;

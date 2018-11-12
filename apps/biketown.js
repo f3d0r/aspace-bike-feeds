@@ -64,7 +64,7 @@ async function reloadBikeTown() {
             typeof currentStationStatus.is_returning != 'undefined' && currentStationStatus.is_returning == 1) {
             currentFormattedBike = {};
             currentFormattedBike.company = 'Biketown PDX';
-            currentFormattedBikeregion = 'US';
+            currentFormattedBike.region = 'US';
             currentFormattedBike.id = currentStationStatus.station_id;
             currentFormattedBike.bikes_available = currentStationStatus.num_bikes_available;
             var similarStation = responses[1].data.stations.filter(station => station.station_id == currentFormattedBike.id);
