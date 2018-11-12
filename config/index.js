@@ -14,6 +14,6 @@ module.exports = {
         '***REMOVED***',
         '***REMOVED***',
         '***REMOVED***',
-        '127.0.0.1'
+        '***REMOVED***'
     ],
 };
