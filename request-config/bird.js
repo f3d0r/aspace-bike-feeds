@@ -39,7 +39,7 @@ module.exports = {
                 'device-id': deviceId,
                 'authorization': 'Bird ' + authToken
             },
-            timeout: 30000,
+            timeout: 60000,
             json: true
         };
     },
