@@ -15,12 +15,11 @@ module.exports = {
     performRequest: function (requestOptions, useProxy = false, proxyIndex = undefined) {
         return new Promise(function (resolve, reject) {
             requestOptions.headers['User-Agent'] = "insomnia/6.0.2";
-            var proxy = getProxy(5);
+            var proxy = getProxy(proxyIndex);
             var agent = new HttpsProxyAgent(proxy);
-            // if (useProxy) {
-                // console.log("HERE PROXY!");
+            if (useProxy) {
                 requestOptions.agent = agent;
-            // }
+            }
             request(requestOptions, function (error, response, body) {
                 if (error) {
                     reject(error);
