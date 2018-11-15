@@ -23,7 +23,7 @@ var requestOptions = require('../request-config/bird');
 
 //CONSTANTS
 const locUpdateThresholdMeters = process.env.LOC_UPDATE_THRESHOLD_METERS;
-const limit = pLimit(process.env.CONCURRENT_REQUESTS);
+const limit = pLimit(50);
 const deviceId = process.env.DEVICE_ID;
 const bikeSearchRadiusMiles = process.env.BIKE_SEARCH_RADIUS_MILES;
 
@@ -100,7 +100,7 @@ async function reloadScooters() {
     var tokenValid = await isTokenValid();
     if (!tokenValid) {
         console.log("BIRD SCOOTERS || TOKEN INVALID, REFRESHING...");
-        var response = await misc.performRequest(requestOptions.loginOptions(process.env.EMAIL, deviceId), true);
+        var response = await misc.performRequest(requestOptions.loginOptions(process.env.EMAIL, deviceId));
         console.log("BIRD SCOOTERS || USER ID = " + response.id);
         if (typeof response.id == 'undefined') {
             console.log("BIRD SCOOTERS || USER ID IS INVALID: " + JSON.stringify(response));
@@ -112,7 +112,7 @@ async function reloadScooters() {
         console.log("BIRD SCOOTERS || TOKEN RECEIVED = " + loginToken);
 
         console.log("BIRD SCOOTERS || VERIFYING TOKEN...");
-        var auth = await misc.performRequest(requestOptions.verifyOptions(loginToken, deviceId), true);
+        var auth = await misc.performRequest(requestOptions.verifyOptions(loginToken, deviceId));
         authToken = auth.token;
         console.log("BIRD SCOOTERS || AUTH TOKEN VALID: " + (authToken.length >= 100));
         if (authToken.length < 100) {
@@ -122,11 +122,18 @@ async function reloadScooters() {
 
     var reqs = [];
     lngLats.forEach(function (currentLoc) {
-        reqs.push(limit(() => misc.performRequest(requestOptions.scooterOptions(currentLoc.lat, currentLoc.lng, 10000, authToken, deviceId), true)));
+        reqs.push(limit(() => misc.performRequest(requestOptions.scooterOptions(currentLoc.lat, currentLoc.lng, 10000, authToken, deviceId))));
     });
 
     console.log("BIRD SCOOTERS || LOADING SCOOTERS");
-    responses = await Promise.all(reqs);
+    var responses;
+    try {
+        responses = await Promise.all(reqs);
+    } catch (e) {
+        console.log("HERE ERROR! : " + JSON.stringify(e));
+    }
+    console.log("HERE DONE!");
+
     uniqueBirds = [];
     responses.forEach(function (response) {
         if (typeof response.birds != 'undefined' && response.birds.length != {}) {
