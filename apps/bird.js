@@ -23,7 +23,7 @@ var requestOptions = require('../request-config/bird');
 
 //CONSTANTS
 const locUpdateThresholdMeters = process.env.LOC_UPDATE_THRESHOLD_METERS;
-const limit = pLimit(50);
+const limit = pLimit(500);
 const deviceId = process.env.DEVICE_ID;
 const bikeSearchRadiusMiles = process.env.BIKE_SEARCH_RADIUS_MILES;
 
@@ -255,7 +255,7 @@ async function isTokenValid() {
         requestsOnToken = 0;
         return false;
     } else {
-        var userInfo = await misc.performRequest(requestOptions.userOptions(authToken, deviceId), true);
+        var userInfo = await misc.performRequest(requestOptions.userOptions(authToken, deviceId));
         if (typeof userInfo != "undefined" && typeof userInfo.id != 'undefined' && userInfo.id.length > 5) {
             return true;
         } else {
