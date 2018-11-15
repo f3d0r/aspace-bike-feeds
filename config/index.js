@@ -1,7 +1,4 @@
 module.exports = {
-    slack: {
-        webhook: '***REMOVED***'
-    },
     db: {
         DATABASE_USER: 'api',
         DATABASE_PASSWORD: 'db_password',
@@ -16,4 +13,36 @@ module.exports = {
         '***REMOVED***',
         '***REMOVED***'
     ],
+    PROXIES: [
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***',
+        '***REMOVED***1'
+    ]
 };
