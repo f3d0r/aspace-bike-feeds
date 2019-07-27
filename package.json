@@ -20,7 +20,7 @@
     "dependencies": {
         "@turf/turf": "^5.1.6",
         "async-wait-until": "^1.2.4",
-        "express": "^4.16.4",
+        "express": "^4.17.1",
         "haversine": "^1.1.0",
         "https-proxy-agent": "^2.2.1",
         "ip": "^1.1.5",
