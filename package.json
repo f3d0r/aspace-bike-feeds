@@ -22,7 +22,7 @@
         "async-wait-until": "^1.2.4",
         "express": "^4.16.4",
         "haversine": "^1.1.0",
-        "https-proxy-agent": "^2.2.1",
+        "https-proxy-agent": "^2.2.2",
         "ip": "^1.1.5",
         "logdna": "^2.0.4",
         "module-alias": "^2.1.0",
