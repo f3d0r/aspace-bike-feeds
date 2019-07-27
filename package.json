@@ -33,6 +33,6 @@
         "perfy": "^1.1.5",
         "promise-mysql": "^4.1.0",
         "request": "^2.88.0",
-        "sqreen": "^1.27.1"
+        "sqreen": "^1.31.0"
     }
 }
