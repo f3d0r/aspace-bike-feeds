@@ -1928,10 +1928,10 @@ lodash.isequal@^4.5.0:
   resolved "https://registry.yarnpkg.com/lodash.isequal/-/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
   integrity sha1-QVxEePK8wwEgwizhDtMib30+GOA=
 
-logdna@^3.2.1:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/logdna/-/logdna-3.2.1.tgz#a0516d92bce197061d31b0c62a97db664229f1d0"
-  integrity sha512-x9GAE5FRKgDBnCmcWzg7ir8yXqfVUMn+XtaLFq/SdjPKPuhz+PAKb1eHZ+o6rtcm7kH/oB3yQYJaGBm+qk8vow==
+logdna@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/logdna/-/logdna-3.3.0.tgz#b517c9550f62784184ffe4f9ddc0a3fb335aab16"
+  integrity sha512-NLxcLiLGwSML3WgxYkr8LC6zZgIPp41kqu3Zu1Gl5Dm2zv0kntDEj06peFpFd+RMxvAyXb7+QCbn6MegGFWWBg==
   dependencies:
     agentkeepalive "^2.2.0"
     axios "^0.19.0"
